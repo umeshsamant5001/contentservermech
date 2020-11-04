@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+  <link rel="stylesheet" href="{% static '/css/breadcrumb.css'%}">
+    <main role="main">
+      <ul class="breadcrumb">
+        <li><a href="{% url 'content_viewer:app_available' %}">Home</a></li>
+      </ul>
+      <hr/>
+      
+        <div class="album py-5 bg-light">
+          <div class="container">
+  
+            <div class="row">
+                <!-- Iterate over object_list -->
+                {% for object in apps_list %}
+              <div class="col-md-4">
+                <div class="card mb-4 box-shadow" style="width: 14rem;">
+                  <a href="{% url 'content_viewer:parent_details' AppId=object.AppId %}">
+                      <img class="card-img-top" src="{% static '/storage/images/'|add:object.fileName %}"
+                        width="50%" height="120" alt="Pratham Open School">
+                  </a>
+                  <div class="card-body">
+                    <p class="card-text"><strong>{{ object.AppName }}</strong></p>
+                    <p class="card-text">{{ object.AppDesc }}</p>
+                    <hr>
+                    <div class="d-flex justify-content-between align-items-center">
+                      &nbsp;&nbsp;
+                      <div class="btn-group">
+                        <a href="{% url 'content_viewer:parent_details' AppId=object.AppId %}">
+                            <button class="btn btn-outline-primary my-2 my-sm-0" type="button">View</button>
+                        </a>
+                        &nbsp;&nbsp;&nbsp;
+                        <a href="{% url 'channels:channel_list' %}">
+                            <button class="btn btn-outline-primary my-2 my-sm-0" type="button">Update</button>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+                 <!-- If objet_list is empty  -->
+                {% empty %}
+                <p>No objects there <br>
+                  <a href="{% url 'channels:channel_list' %}">
+                      <button class="btn btn-outline-primary my-2 my-sm-0" type="button">Download</button>
+                  </a>
+                </p>
+              {% endfor %}
+              </div>
+            </div>
+          </div>
+  
+      </main>
+
+{% endblock  %}

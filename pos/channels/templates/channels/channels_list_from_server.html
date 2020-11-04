@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+<link rel="stylesheet" href="{% static '/css/channels.css' %}">
+{% block content %}
+    {% if channels_from_server %}
+        <main role="main">
+
+      <section class="text-center">
+        <div class="container">
+          <h3 class="jumbotron-heading">Available channels To Download</h3>
+        </div>
+      </section>
+      <div class="album py-5 bg-light">
+        <div class="container">
+          <div class="row">
+          {% for apps in channels_from_server %}
+              <div class="col-md-4">
+                <div class="card mb-4 box-shadow" style="width: 14rem;">
+                  <img class="card-img-top" src="{% static 'images/newlogo.jpg' %}"
+                      width="50%" height="120" alt="Pratham Open School">
+                  <div class="card-body">
+                    <p class="card-text">
+                    {{ apps.AppDesc }}</br></br>
+                        <a href="{% url 'channels:show_details' AppId=apps.AppId AppName=apps.AppName %}">
+                          <button type="button" class="btn btn-sm btn-outline-success float-right">{{ apps.AppName }}</button>
+                        </a>
+                    </p>
+                    <p class="card-text">
+                        
+                    </p>
+                    {% comment %} <div class="d-flex justify-content-between align-items-center">
+                      <div class="btn-group float-right">
+                        <button type="button" class="btn btn-sm btn-outline-success float-right">Open</button>
+                      </div>
+                    </div> {% endcomment %}
+                  </div>
+                </div>
+              </div>
+          {% endfor %}
+          </div>
+        </div>
+      </div>
+
+    </main>
+    {% else %}
+        <p>no channels exists. Please Check the internet Connection!</p>   
+    {% endif %}
+{% endblock  %}

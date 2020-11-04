@@ -1,0 +1,68 @@
+{% load static %}
+<link rel="stylesheet" href="{% static '/css/jumbotron.css'%}">
+<!-- <script src='https://code.jquery.com/jquery-3.2.1.min.js'></script> -->
+<style type="text/css">
+    @media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+.border-top { border-top: 1px solid #e5e5e5; }
+.border-bottom { border-bottom: 1px solid #e5e5e5; }
+
+.box-shadow { box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .5); }
+</style>
+
+<nav class="navbar navbar-expand-md navbar-default fixed-top navbar-dark bg-dark border-bottom box-shadow">
+      <a class="navbar-brand" href="#">
+          <img src="{% static '/images/logop1.png' %}" alt="">
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      {% if request.user.is_authenticated %}
+      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="{% url 'core:programs' %}">
+                <button class="btn btn-outline-warning my-2 my-sm-0" type="submit">
+                    Home <span class="sr-only">(current)</span>
+                </button>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'content_viewer:app_available' %}">
+                <button class="btn btn-outline-warning my-2 my-sm-0" type="submit">Apps</button>
+            </a>
+          </li>
+        </ul>
+        <ul class="navbar-nav my-2 my-md-0 mr-md-3">
+          <li class="nav-item active">
+            <span style="color: #e5e5e5;">
+              Welcome, {{ request.user.username }}
+            </span>
+          </li>
+      </ul>
+        <ul class="navbar-nav my-2 my-md-0 mr-md-3">
+            <li class="nav-item active">
+              <a class="nav-link" href="{% url 'account:user_logout' %}">
+                  <button class="btn btn-outline-warning my-2 my-sm-0" type="submit">Logout</button>
+              </a>
+            </li>
+        </ul>
+      </div>
+      {% else %}
+        <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+            <ul class="navbar-nav my-2 my-md-0 mr-md-3">
+              <li class="nav-item active">
+                <a class="nav-link" href="{% url 'account:user_login' %}">
+                    <button class="btn btn-outline-warning my-2 my-sm-0" type="submit">Login</button>
+                </a>
+              </li>
+          </ul>
+        </div>
+      {% endif %}
+    </nav>
+    <hr>
+    <br>
+    <br>

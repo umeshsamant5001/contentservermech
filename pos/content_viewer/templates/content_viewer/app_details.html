@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static '/css/breadcrumb.css'%}">
+  <main role="main">
+  <ul class="breadcrumb">
+    <li><a href="{% url 'content_viewer:app_available' %}">Home</a></li>
+    <li>
+      {% for qs in parent_details %}
+        {% if qs.appavailableindb.NodeType == "App"%}
+          <a href="{% url 'content_viewer:parent_details' AppId=qs.appavailableindb.AppId %}">{{ qs.appavailableindb.applistfromserverdata.AppName }}</a>
+        {% endif %}
+      {% endfor %}
+    </li>
+  </ul>
+  
+  <hr/>
+    <div class="album py-5 bg-light">
+      <div class="container">
+        <p style="font-size: 30px; font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif">{{ app_name }}</p>
+        <div class="row">
+            <!-- Iterate over object_list -->
+            {% for object in parent_details %}
+              {% if object.appavailableindb.ParentId == null and object.FileType == "Thumbnail" %}
+          <div class="col-md-4">
+            <div class="card mb-4 box-shadow" style="width: 14rem;">
+              <a href="{% url 'content_viewer:child_details' NodeId=object.NodeId %}">
+                <img class="card-img-top" src="{% static '/storage/images/'|add:object.fileName %}"
+                  width="50%" height="120" alt="Pratham Open School">
+              </a>
+              <div class="card-body">
+                <p class="card-text"><strong>{{object.appavailableindb.NodeTitle}}</strong></p>
+                <hr>
+                <div class="d-flex justify-content-between align-items-center">
+                  &nbsp;&nbsp;
+                  <div class="btn-group">
+                    <a href="{% url 'content_viewer:child_details' NodeId=object.NodeId %}">
+                        <button class="btn btn-outline-primary my-2 my-sm-0" type="button">View</button>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+             <!-- If objet_list is empty  -->
+            {% empty %}
+            <p>No objects there
+              <a href="{% url 'channels:channel_list' %}">
+                  <button class="btn btn-outline-primary my-2 my-sm-0" type="button">Download</button>
+              </a>
+            </p>
+          {% endfor %}
+          </div>
+        </div>
+      </div>
+
+  </main>
+{% endblock %}

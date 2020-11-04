@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static '/css/breadcrumb.css'%}">
+    <main role="main">
+      <nav aria-label="breadcrumb">
+          <ul class="breadcrumb">
+              <li>
+                  <a href="{% url 'content_viewer:app_available' %}">
+                  Home
+                </a>
+              </li>
+              <li>
+                  {% for qs in app_name %}
+                      <a href="{% url 'content_viewer:parent_details' AppId=qs.AppId %}">
+                          {{ qs.AppName }}
+                      </a>
+                  {% endfor %}
+              </li>
+              {% for qs in chaining_queries %}
+                  {% for ids in qs %}
+                      <li><a href="{% url 'content_viewer:child_details' NodeId=ids.NodeId %}">{{ ids.NodeTitle }}</a></li>
+                  {% endfor %}
+              {% endfor %}
+              {% if game_play %}
+                  {% for object in game_play %}
+                    {% if object.FileType == "Content" and object.appavailableindb.NodeType == "Resource" %}
+                      <li>{{object.appavailableindb.NodeTitle}}</li>
+                    {% endif %}
+                  {% endfor %}
+              {% elif pdf_play %}
+                  {% for object in pdf_play %}
+                    {% if object.FileType == "Content" and object.appavailableindb.NodeType == "Resource" %}
+                      <li>{{object.appavailableindb.NodeTitle}}</li>
+                    {% endif %}
+                  {% endfor %}
+              {% elif video_play %}
+                  {% for object in video_play %}
+                    {% if object.FileType == "Content" and object.appavailableindb.NodeType == "Resource" %}
+                      <li>{{object.appavailableindb.NodeTitle}}</li>
+                    {% endif %}
+                  {% endfor %}
+              {% elif audio_play %}
+                  {% for object in audio_play %}
+                    {% if object.FileType == "Content" and object.appavailableindb.NodeType == "Resource" %}
+                      <li>{{object.appavailableindb.NodeTitle}}</li>
+                    {% endif %}
+                  {% endfor %}
+              {% elif wrong_format %}
+                  {% for object in wrong_format %}
+                    {% if object.FileType == "Content" and object.appavailableindb.NodeType == "Resource" %}
+                      <li>{{object.appavailableindb.NodeTitle}}</li>
+                    {% endif %}
+                  {% endfor %}
+              {% endif %}
+            </ul>
+        </nav>
+    <hr/>
+      
+        <div class="album py-5 bg-light">
+          <div class="container">
+  
+            <div class="row">
+                <!-- games  -->
+                {% if game_play %}
+                  {% for object in game_play %}
+                      {% if object.FileType == "Content" and object.appavailableindb.NodeType == "Resource" %}
+                        <div class="title">
+                          <p style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 2.5em;">{{object.appavailableindb.NodeTitle}}</p>
+                          <!-- <br/><br/> -->
+                          <hr>
+                            <embed type="text/html" src="{% static '/storage/content/zips/'|add:object.fileName %}" 
+                            width="900" height="500">
+                        </div>
+                      {% endif %}
+                  {% endfor %}
+                
+                <!-- pdf  -->
+                {% elif pdf_play %}
+                  {% for object in pdf_play %}
+                      {% if object.FileType == "Content" and object.appavailableindb.NodeType == "Resource" %}
+                        <div class="title">
+                          <p style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 2.5em;">{{object.appavailableindb.NodeTitle}}</p>
+                          <!-- <br/><br/> -->
+                          <hr>
+                            <embed type="application/pdf" src="{% static '/storage/content/docs/'|add:object.fileName %}" 
+                            width="800" height="900">
+                          </div>
+                      {% endif %}
+                  {% endfor %}
+                
+                <!-- videos  -->
+                {% elif video_play %}
+                  {% for object in video_play %}
+                    {% if object.FileType == "Content" and object.appavailableindb.NodeType == "Resource" %}
+                      <div class="title">
+                        <p style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 2.5em;">{{object.appavailableindb.NodeTitle}}</p>
+                        <!-- <br/><br/> -->
+                        <hr>
+                          <video width="780" controls>
+                            <source src="{% static '/storage/content/videos/mp4/'|add:object.fileName %}" type="video/mp4" controls>
+                            Your browser does not support the video tag
+                          </video>
+                        </div>
+                    {% endif %}
+                  {% endfor %}
+                
+                <!-- audio -->
+                {% elif audio_play %}
+                  {% for object in audio_play %}
+                    {% if object.FileType == "Content" and object.appavailableindb.NodeType == "Resource" %}
+                      <div class="title">
+                        <p style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 2.5em;">{{object.appavailableindb.NodeTitle}}</p>
+                        <!-- <br/> -->
+                        <hr>
+                            <div class="jumbotron">
+                              <audio width="280" controls>
+                                <source src="{% static '/storage/content/audios/mp3/'|add:object.fileName %}" type="audio/mp3" controls>
+                                Your browser does not support the audio tag
+                            </audio>
+                            </div>
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                
+                <!-- wrong format  -->
+                {% else %}
+                  {% for object in wrong_format %}
+                    {% if object.FileType == "Content" and object.appavailableindb.NodeType == "Resource" %}
+                      <div class="jumbotron">
+                        <p style="font-weight: bold;">This file cannot be played it is in wrong format!!</p>
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+              </div>
+            </div>
+          </div>
+  
+      </main>
+
+{% endblock  %}

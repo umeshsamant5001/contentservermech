@@ -1,0 +1,327 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="container">
+        <div class="">
+            <div class="breadcrumb">
+                <ul>
+                    {% comment %} <a href="{% url 'channels:show_details' AppId=AppId AppName=AppName %}">
+                        {{ AppName }} >
+                    </a> {% endcomment %}
+                </ul>
+                <div class="items">
+                </div>
+                <div class="btn-block pull-right">
+                    <button type="submit" id="sort_ids" class="btn btn-dark float-right" disabled>Download</button>
+                </div>
+            </div>
+            <div id="dvtree">
+            </div>
+            <div class="loading" id="loaded" style="display:none;">
+                <div class="loader">
+                </div>
+                Please wait while data is loading
+                <img src="{% static '/images/805.gif' %}" />
+            </div>
+        </div>
+    </div>
+
+<script>
+    let treeData = '';
+    let uniqueArray = [];
+    let res = "{{AppId}}";
+    $.ajax({
+        url: '/channel/return_json_value/'+res+'/',
+        type: 'GET',
+        crossDomain: true,
+        datatype: "jsonp",
+        success: function(data) {
+            treeData = data.json_data;
+            createTree();
+    }
+
+});
+
+    
+function createTree(){
+    let str = '';
+    str=str+'<ul>';
+    for (let i = 0; i < treeData.length; i++) {
+        if(treeData[i]["ParentId"] === null){
+            if(treeData[i].checked){
+                str=str+'<li>\
+            <input type="checkbox" class="box" id="'+treeData[i]["NodeId"].toString()+'"\
+            checked="true" onchange="indeterminateCall(this);">\
+            <a href="#" style="color:black;text-decoration:None;"\
+             onclick="populateTree(\''+treeData[i]["NodeId"].toString()+'\');">'+treeData[i]["NodeTitle"]+'</a></li>';
+            }
+            else{
+                str=str+'<li>\
+            <input type="checkbox" class="box" id="'+treeData[i]["NodeId"].toString()+'" \
+            onchange="indeterminateCall(this);">\
+            <a href="#" style="color:black;text-decoration:None;"\
+             onclick="populateTree(\''+treeData[i]["NodeId"].toString()+'\');">'+treeData[i]["NodeTitle"]+'</a></li>';
+            }
+        }
+    }
+
+    str=str+'</ul>';
+    $("#dvtree").html(str);
+
+}
+
+function populateTree(parentid)
+{
+    let str = '';
+    str=str+'<ul>';
+
+    for (let i = 0; i < treeData.length; i++) {
+        if(treeData[i]["ParentId"] !== null)
+        {
+        if(treeData[i]["ParentId"].toString() === parentid.toString())
+        {
+            if(treeData[i].checked){
+                str=str+'<li>\
+            <input type="checkbox" class="box" id="'+treeData[i]["NodeId"].toString()+'"\
+            checked="true" onchange="indeterminateCall(this);">\
+            <a href="#" style="color:black;text-decoration:None;"\
+             onclick="populateTree(\''+treeData[i]["NodeId"].toString()+'\');">'+treeData[i]["NodeTitle"]+'</a></li>';
+            }
+            else{
+                str=str+'<li>\
+            <input type="checkbox" class="box" id="'+treeData[i]["NodeId"].toString()+'"\
+            onchange="indeterminateCall(this);">\
+            <a href="#" style="color:black;text-decoration:None;"\
+             onclick="populateTree(\''+treeData[i]["NodeId"].toString()+'\');">'+treeData[i]["NodeTitle"]+'</a></li>';
+            }
+         }
+
+        }
+    }
+
+    str=str+'</ul>';
+    $("#dvtree").html(str);
+     $(".items").empty();
+    GetCrumb(parentid);
+}
+
+    function GetCrumb(id)
+    {
+        for (let i = 0; i < treeData.length; i++) {
+            if(treeData[i]["ParentId"] !== null)
+                {
+                    if(treeData[i]["NodeId"].toString() === id.toString())
+                        {
+                            $(".items").prepend(' > <a href="#" style="color:green;text-decoration:None;"\
+                            onclick="populateTree(\''+treeData[i]["NodeId"].toString()+'\');">'+treeData[i]["NodeTitle"].toString()+'</a>');
+                            return GetCrumb(treeData[i]["ParentId"]);
+                        }
+                }
+            else
+                {
+                    if(treeData[i]["NodeId"].toString() === id.toString())
+                        { $(".items").prepend(' <a href="#" style="color:green;text-decoration:None;"\
+                        onclick="populateTree(\''+treeData[i]["NodeId"].toString()+'\');">'+treeData[i]["NodeTitle"].toString()+'</a>');
+                        }
+                }
+        }
+    }
+
+    // selecting all the child nodes when parent is selected
+    function childTicked(id){
+        for(let i=0;i<treeData.length; i++){
+            if(treeData[i]['ParentId'] !== null){
+                if(treeData[i]["NodeId"].toString() === id.toString()){
+                    if(!treeData[i].checked){
+                        treeData[i].checked = true;
+                        uniqueArray.push(treeData[i]['NodeId']);
+                        parentTicked(treeData[i]['NodeId']); // calling parent for selecting parent nodes
+                        for(let j=0; j<treeData.length; j++){
+                            if(treeData[j]['ParentId'] != null){
+                                if(treeData[i]["NodeId"].toString() === treeData[j]["ParentId"].toString()){
+                                    childTicked(treeData[j]["NodeId"]);
+                                    uniqueArray.push(treeData[j]['NodeId']);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else{
+                if(treeData[i]["NodeId"].toString() === id.toString()){
+                    // console.log(id.id + " checked");
+                    if(!treeData[i].checked){
+                        treeData[i].checked = true;
+                        // console.log(treeData);
+                        uniqueArray.push(treeData[i]["NodeId"]);                        
+                        parentTicked(treeData[i]['NodeId']);
+                        for(var j=0; j<treeData.length; j++){
+                            if(treeData[j]["ParentId"] != null){
+                                if(treeData[i]["NodeId"].toString() === treeData[j]["ParentId"].toString()){
+                                    childTicked(treeData[j]["NodeId"]);
+                                    uniqueArray.push(treeData[j]['NodeId']);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        jsonObject = uniqueArray.map(JSON.stringify);
+        uniqueSet = new Set(jsonObject);
+        uniqueArray = Array.from(uniqueSet).map(JSON.parse);
+        console.log(uniqueArray)
+        console.log(uniqueArray.length)
+    }
+
+    // uncheck function for removing all child nodes once parent is selected
+    function childUnticked(id){
+        for(var i=0; i<treeData.length; i++){
+            if(treeData[i]["ParentId"] != null){
+                if(treeData[i]["NodeId"].toString() === id.toString()){
+                    const filteredArray = uniqueArray.filter(item => item != id);
+                    uniqueArray = filteredArray;
+                    delete treeData[i].checked;
+                    // console.log(treeData[i]);
+                    //parentUnticked(treeData[i]['NodeId']);
+                    for(var j=0; j<treeData.length; j++){
+                        if(treeData[j]["ParentId"] != null){
+                            if(treeData[i]["NodeId"].toString() === treeData[j]["ParentId"].toString()){
+                                const filteredArray = uniqueArray.filter(item => item != id);
+                                uniqueArray = filteredArray;
+                                childUnticked(treeData[j]["NodeId"]);
+                            }
+                        }
+                    }
+                }
+            }
+            else{
+                if(treeData[i]["NodeId"].toString() === id.toString()){
+                    const filteredArray = uniqueArray.filter(item => item != id);
+                    uniqueArray = filteredArray;
+                    delete treeData[i].checked;
+                    for(var j=0; j<treeData.length; j++){
+                        if(treeData[j]["ParentId"] != null){
+                            if(treeData[i]["NodeId"].toString() === treeData[j]["ParentId"].toString()){
+                                const filteredArray = uniqueArray.filter(item => item != id);
+                                uniqueArray = filteredArray;
+                                childUnticked(treeData[j]["NodeId"]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    console.log(uniqueArray);
+    console.log("after uncheck length is " + uniqueArray.length);
+    }
+
+    // auto selecting the parent checkboxes when children checkbox is selected
+    function parentTicked(id){
+        for (let i = 0; i < treeData.length; i++) {
+            if(treeData[i]["ParentId"] !== null){
+                if(treeData[i]["NodeId"].toString() === id.toString()){
+                    for(let j=0;j<treeData.length;j++){
+                        if(treeData[j]["NodeId"].toString() === treeData[i]["ParentId"].toString())
+                        {
+                            // console.log("parentid is --->", treeData[j]["ParentId"])
+                            treeData[j].checked = true;
+                            parentTicked(treeData[j]["NodeId"]);
+                            uniqueArray.push(treeData[j]['NodeId']);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // will use this afterwards currently just function is created
+    function parentUnticked(id){
+        for (let i = 0; i < treeData.length; i++) {
+            if(treeData[i]["ParentId"] !== null){
+                if(treeData[i]["NodeId"].toString() === id.toString()){
+                    for(let j=0;j<treeData.length;j++){
+                        if(treeData[j]["NodeId"].toString() === treeData[i]["ParentId"].toString())
+                        {
+                            delete treeData[j].checked
+                            parentUnticked(treeData[j]["NodeId"]);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    function indeterminateCall(id){
+        if($(id).is(":checked")){
+            childTicked(id.id);
+            remainingElements();
+
+        }
+        else{
+            childUnticked(id.id);
+            remainingElements();
+        }
+    }
+
+    function remainingElements(){
+        console.log("downloading")
+        if (uniqueArray.length > 0){
+            document.getElementById('sort_ids').disabled = false;
+        }
+        else{
+                document.getElementById('sort_ids').disabled = true;
+        }
+    }
+
+    // function checkInternetConnection(){
+    //     status = navigator.onLine;
+    //     if (status) {
+    //         console.log('Internet Available !!' + status);
+    //     } else {
+    //         console.log('No internet Available !!' + status);
+    //     }  
+    //     setTimeout(function() {
+    //         checkInternetConnection();
+    //     }, 1000);
+    //   }
+
+    $('#sort_ids').click(function(){
+        //console.log("status is " + status);
+        $.ajax({
+            url: "/channel/downloads/",
+            type: 'POST',
+            data:{
+                'node_values[]':  uniqueArray,
+                'AppId': res,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            crossDomain: true,
+            datatype: "jsonp",
+            beforeSend: function(){
+                $('#loaded').show();
+                //checkInternetConnection();
+            },
+            success: function(result){
+                console.log(result);
+                if(result != null && result == 'success'){
+                    $('#loaded').hide();
+                    window.location.href = '/content/app_available/';
+                }
+                else{
+                    window.location.href = '/channel/no_internet/';
+                }
+            },
+            error: function (error) {
+                console.log('error; ' + eval(error));
+            }
+        });
+    });
+
+
+
+</script>
+{% endblock %}
+
+
