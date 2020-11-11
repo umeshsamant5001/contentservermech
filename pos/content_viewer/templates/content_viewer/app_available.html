@@ -3,26 +3,28 @@
 {% block content %}
   <link rel="stylesheet" href="{% static '/css/breadcrumb.css'%}">
     <main role="main">
-      <ul class="breadcrumb">
-        <li><a href="{% url 'content_viewer:app_available' %}">Home</a></li>
-      </ul>
-      <hr/>
+      {% if apps_list %}
+        <ul class="breadcrumb">
+          <li><a href="{% url 'content_viewer:app_available' %}">Home</a></li>
+        </ul>
+      {% endif %}
+     
       
-        <div class="album py-5 bg-light">
+        <div class="album bg-light">
           <div class="container">
   
             <div class="row">
                 <!-- Iterate over object_list -->
                 {% for object in apps_list %}
-              <div class="col-md-4">
-                <div class="card mb-4 box-shadow" style="width: 14rem;">
+              <div class="col-md-4 col-4">
+                <div class="card mb-4 box-shadow" >
                   <a href="{% url 'content_viewer:parent_details' AppId=object.AppId %}">
                       <img class="card-img-top" src="{% static '/storage/images/'|add:object.fileName %}"
                         width="50%" height="120" alt="Pratham Open School">
                   </a>
                   <div class="card-body">
                     <p class="card-text"><strong>{{ object.AppName }}</strong></p>
-                    <p class="card-text">{{ object.AppDesc }}</p>
+                    {% comment %} <p class="card-text">{{ object.AppDesc }}</p> {% endcomment %}
                     <hr>
                     <div class="d-flex justify-content-between align-items-center">
                       &nbsp;&nbsp;
@@ -39,13 +41,23 @@
                   </div>
                 </div>
               </div>
-                 <!-- If objet_list is empty  -->
+
+              <!-- check if empty -->
                 {% empty %}
-                <p>No objects there <br>
-                  <a href="{% url 'channels:channel_list' %}">
-                      <button class="btn btn-outline-primary my-2 my-sm-0" type="button">Download</button>
-                  </a>
-                </p>
+                <br>
+                <div class="row col-md-12">
+                  <p class="span6" style="float: none; margin:auto;">
+                  <img src='{% static "/images/error_outline-24px.svg" %}'>Content is not Available Please Download
+                  </p>
+                </div>
+                <div class="row col-md-12">
+                  <p class="span6" style="float: none; margin:auto;">
+                  <a class="btn btn-outline-success my-2 my-sm-0" type="button" href="{% url 'channels:channel_list' %}"><img src='{% static "/images/get_app-24px.svg" %}'>Download</a> 
+                  </p>
+                </div>
+                
+                  
+                
               {% endfor %}
               </div>
             </div>

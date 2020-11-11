@@ -1,33 +1,49 @@
 {% extends 'base.html' %}
 {% load static %}
-<link rel="stylesheet" href="{% static '/css/dropdown.css'%}">
+
 {% block content %}
+<br>
 <div class="wrapper col-md-4 text-center container">
-    <div class="jumbotron vertical-center" style="padding-top: 16px;">
         <img src="{% static 'images/logo.png' %}" alt="Pratham">
+    <div class="container vertical-center rounded" style="padding: 15px;background-color: #DCC551;">   
         <form class="form-style" method="post">
             {% csrf_token %}
-            Programs:
-            <select name="program_list" class="form-control my-select" id="auto_program" onchange="">
-                <option value="">Please Select the Program</option>
-                {% for program in program_result %}
-                    <option value="{{program.ProgramId}}">{{ program.ProgramName }}</option>
-                {% endfor %}
-            </select>
-            States:
-            <select class="form-control" name="state_list" id="auto_state" onchange="">
-                <option value=" ">Please select the state</option>
-            </select>
-            Districts:
-            <select name="district_list" class="form-control" id="auto_district" onchange="">
-                <option value=" ">Please select the district</option>
-            </select><br>
-            Blocks:
-                <select name="block_list" class="form-control" id="auto_block">
-                    <option value=" ">Please select the district</option>
-                </select><br><br>
-            <button id="get_villages" name="answer" class="btn btn-outline-danger my-2 my-sm-0
-                data-toggle="modal" data-target="#popup">
+            <div class="row">
+            <span class="col-md-4">Programs:</span>
+            <span class="col-md-8">
+                <select name="program_list" class="form-control my-select" id="auto_program" onchange="">
+                    <option value="">Select Program</option>
+                    {% for program in program_result %}
+                        <option value="{{program.ProgramId}}">{{ program.ProgramName }}</option>
+                    {% endfor %}
+                </select>
+            </span>
+            </div><br>
+            <div class="row">
+                <span class="col-md-4">States:</span>
+                <span class="col-md-8">
+                    <select name="state_list" class="form-control" id="auto_state" onchange="">
+                        <option value=" ">Select state</option>
+                    </select>
+                </span>
+            </div><br>
+            <div class="row">
+                <span class="col-md-4">Districts:</span>
+                <span class="col-md-8">
+                    <select name="district_list" class="form-control" id="auto_district" onchange="">
+                        <option value=" ">Select district</option>
+                    </select>
+                </span>
+            </div><br>
+            <div class="row">
+                <span class="col-md-4">Blocks:</span>
+                <span class="col-md-8">
+                    <select name="block_list" class="form-control" id="auto_block">
+                        <option value=" ">Select Block</option>
+                    </select>
+                </span>
+            </div><br>
+            <button id="get_villages" name="answer" class="btn btn-danger my-2 my-sm-0" data-toggle="modal" data-target="#popup">
                 OK
             </button>
             <!-- The Modal -->
@@ -42,7 +58,7 @@
                         </div>
 
                         <!-- Modal body -->
-                        <div class="modal-body" id="villagedetails">
+                        <div class="modal-body text-left" id="villagedetails">
         <!--                    <input type="text" class="form-control" id="myMainPageInput" />-->
                         </div>
 
@@ -57,9 +73,11 @@
                   </div>
                 <div class="loading" id="loaded" style="display:none;">
                     <div class="loader">
-                    </div>
-                    Please wait while data is loading
-                    <img src="{% static '/images/805.gif' %}" />
+                    </div>                
+                    <button class="btn btn-primary" disabled>
+                        <span class="spinner-grow spinner-grow-sm"></span>
+                        Loading..
+                      </button>
                 </div>
         </form>
     </div>
@@ -167,12 +185,15 @@
         datatype: "jsonp",
         beforeSend: function(){
             $('#loaded').show();
+            $('#get_villages').hide();
         },
         success: function(data){
             console.log(data);
             if(data != null && data == 'success')
                 {
                     $('#loaded').hide();
+                    $('#get_villages').show();
+                    window.location="/register/user_login/";
                 }
         },
         error: function (error) {

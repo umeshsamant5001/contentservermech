@@ -27,27 +27,27 @@
             {% endfor %}
           </ul>
       </nav>
-  <hr/>
-    <div class="album py-5 bg-light">
+  
+    <div class="album bg-light">
       <div class="container">
         <div class="row">
             <!-- Iterate over object_list -->
             {% for object in child_details %}
                 {% if object.appavailableindb.NodeType == "Topic" or object.appavailableindb.NodeType == 'Language' %}
-                    <div class="col-md-4">
-                        <div class="card mb-4 box-shadow" style="width: 14rem;">
+                    <div class="col-md-4 col-4">
+                        <div class="card mb-4 box-shadow" style="width: 80%;">
                             <a href="{% url 'content_viewer:child_details' NodeId=object.NodeId %}">
                                 <img class="card-img-top" src="{% static '/storage/images/'|add:object.fileName %}"
                                 width="50%" height="120" alt="Pratham Open School">
                             </a>
                         <div class="card-body">
-                            <p class="card-text"><strong>{{object.appavailableindb.NodeTitle}}</strong></p>
-                            <hr>
+                            <span class="card-text"><strong>{{object.appavailableindb.NodeTitle}}</strong></span>
+                            
                             <div class="d-flex justify-content-between align-items-center">
                                 &nbsp;&nbsp;
                             <div class="btn-group">
                                 <a href="{% url 'content_viewer:child_details' NodeId=object.NodeId %}">
-                                    <button class="btn btn-outline-primary my-2 my-sm-0" type="button">View</button>
+                                    <button class="btn btn-outline-primary" type="button">View</button>
                                 </a>
                             </div>
                             </div>
@@ -62,7 +62,7 @@
                                 width="50%" height="120" alt="Pratham Open School">
                             </a>
                         <div class="card-body">
-                            <p class="card-text"><strong>{{object.appavailableindb.NodeTitle}}</strong></p>
+                            <span class="card-text"><strong>{{object.appavailableindb.NodeTitle}}</strong></span>
                             <hr>
                             <div class="d-flex justify-content-between align-items-center">
                                 &nbsp;&nbsp;

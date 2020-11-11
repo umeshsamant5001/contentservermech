@@ -55,23 +55,22 @@
               {% endif %}
             </ul>
         </nav>
-    <hr/>
+    
       
-        <div class="album py-5 bg-light">
-          <div class="container">
+        <div class="album bg-light">
+          <div class="container ">
   
-            <div class="row">
+            <div class="row ">
                 <!-- games  -->
                 {% if game_play %}
                   {% for object in game_play %}
                       {% if object.FileType == "Content" and object.appavailableindb.NodeType == "Resource" %}
                         <div class="title">
-                          <p style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 2.5em;">{{object.appavailableindb.NodeTitle}}</p>
-                          <!-- <br/><br/> -->
-                          <hr>
+                          <p style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 2em;">{{object.appavailableindb.NodeTitle}}</p>
+                          <!-- <br/><br/> -->                          
                             <embed type="text/html" src="{% static '/storage/content/zips/'|add:object.fileName %}" 
                             width="900" height="500">
-                        </div>
+                        </div><br>
                       {% endif %}
                   {% endfor %}
                 
@@ -80,12 +79,12 @@
                   {% for object in pdf_play %}
                       {% if object.FileType == "Content" and object.appavailableindb.NodeType == "Resource" %}
                         <div class="title">
-                          <p style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 2.5em;">{{object.appavailableindb.NodeTitle}}</p>
+                          <p style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 2em;">{{object.appavailableindb.NodeTitle}}</p>
                           <!-- <br/><br/> -->
-                          <hr>
+                          
                             <embed type="application/pdf" src="{% static '/storage/content/docs/'|add:object.fileName %}" 
                             width="800" height="900">
-                          </div>
+                          </div><br>
                       {% endif %}
                   {% endfor %}
                 
@@ -94,14 +93,14 @@
                   {% for object in video_play %}
                     {% if object.FileType == "Content" and object.appavailableindb.NodeType == "Resource" %}
                       <div class="title">
-                        <p style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 2.5em;">{{object.appavailableindb.NodeTitle}}</p>
+                        <p style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 2em;">{{object.appavailableindb.NodeTitle}}</p>
                         <!-- <br/><br/> -->
-                        <hr>
-                          <video width="780" controls>
+                        
+                          <video style="width:100%;" controls>
                             <source src="{% static '/storage/content/videos/mp4/'|add:object.fileName %}" type="video/mp4" controls>
                             Your browser does not support the video tag
                           </video>
-                        </div>
+                        </div><br>
                     {% endif %}
                   {% endfor %}
                 
@@ -110,16 +109,16 @@
                   {% for object in audio_play %}
                     {% if object.FileType == "Content" and object.appavailableindb.NodeType == "Resource" %}
                       <div class="title">
-                        <p style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 2.5em;">{{object.appavailableindb.NodeTitle}}</p>
+                        <p style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 2em;">{{object.appavailableindb.NodeTitle}}</p>
                         <!-- <br/> -->
-                        <hr>
+                        
                             <div class="jumbotron">
-                              <audio width="280" controls>
+                              <audio style="width:100%;" controls>
                                 <source src="{% static '/storage/content/audios/mp3/'|add:object.fileName %}" type="audio/mp3" controls>
                                 Your browser does not support the audio tag
                             </audio>
                             </div>
-                      </div>
+                      </div><br>
                     {% endif %}
                   {% endfor %}
                 

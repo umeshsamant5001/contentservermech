@@ -9,6 +9,7 @@ urlpatterns = [
     path('register/', include('account.urls')),
     path('channel/', include('channels.urls')),
     path('content/', include('content_viewer.urls')),
+    path('push/', include('push.urls')),
     path('api/', include('core_api.urls')),
     path('api/channel/', include('channels_api.urls')),
 ]

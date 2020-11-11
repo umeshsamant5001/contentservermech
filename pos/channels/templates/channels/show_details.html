@@ -13,17 +13,22 @@
                 <div class="items">
                 </div>
                 <div class="btn-block pull-right">
-                    <button type="submit" id="sort_ids" class="btn btn-dark float-right" disabled>Download</button>
+                    <button type="submit" id="sort_ids" class="btn btn-success float-right" disabled>Download</button>
+                    <div class="loading" id="loaded" style="display:none;">
+                <div class="loader">
+                <button class="btn btn-primary float-right" disabled>
+                        <span class="spinner-grow spinner-grow-sm"></span>
+                        Loading..
+                      </button>
+                </div>
+                
+                
+            </div>
                 </div>
             </div>
             <div id="dvtree">
             </div>
-            <div class="loading" id="loaded" style="display:none;">
-                <div class="loader">
-                </div>
-                Please wait while data is loading
-                <img src="{% static '/images/805.gif' %}" />
-            </div>
+            
         </div>
     </div>
 
@@ -51,16 +56,12 @@ function createTree(){
         if(treeData[i]["ParentId"] === null){
             if(treeData[i].checked){
                 str=str+'<li>\
-            <input type="checkbox" class="box" id="'+treeData[i]["NodeId"].toString()+'"\
-            checked="true" onchange="indeterminateCall(this);">\
-            <a href="#" style="color:black;text-decoration:None;"\
+            <a href="#" style="color:black;"\
              onclick="populateTree(\''+treeData[i]["NodeId"].toString()+'\');">'+treeData[i]["NodeTitle"]+'</a></li>';
             }
             else{
                 str=str+'<li>\
-            <input type="checkbox" class="box" id="'+treeData[i]["NodeId"].toString()+'" \
-            onchange="indeterminateCall(this);">\
-            <a href="#" style="color:black;text-decoration:None;"\
+            <a href="#" style="color:black;"\
              onclick="populateTree(\''+treeData[i]["NodeId"].toString()+'\');">'+treeData[i]["NodeTitle"]+'</a></li>';
             }
         }
@@ -69,7 +70,8 @@ function createTree(){
     str=str+'</ul>';
     $("#dvtree").html(str);
 
-}
+    }
+
 
 function populateTree(parentid)
 {
@@ -84,15 +86,15 @@ function populateTree(parentid)
             if(treeData[i].checked){
                 str=str+'<li>\
             <input type="checkbox" class="box" id="'+treeData[i]["NodeId"].toString()+'"\
-            checked="true" onchange="indeterminateCall(this);">\
-            <a href="#" style="color:black;text-decoration:None;"\
+            checked="true" onchange="indeterminateCall(this);" onclick="popup(this);">\
+            <a href="#" style="color:black;"\
              onclick="populateTree(\''+treeData[i]["NodeId"].toString()+'\');">'+treeData[i]["NodeTitle"]+'</a></li>';
             }
             else{
                 str=str+'<li>\
             <input type="checkbox" class="box" id="'+treeData[i]["NodeId"].toString()+'"\
-            onchange="indeterminateCall(this);">\
-            <a href="#" style="color:black;text-decoration:None;"\
+            onchange="indeterminateCall(this);" onclick="popup(this);">\
+            <a href="#" style="color:black;"\
              onclick="populateTree(\''+treeData[i]["NodeId"].toString()+'\');">'+treeData[i]["NodeTitle"]+'</a></li>';
             }
          }
@@ -105,6 +107,18 @@ function populateTree(parentid)
      $(".items").empty();
     GetCrumb(parentid);
 }
+
+    function popup(id){
+       if($(id).is(":checked")){
+            var txt = document.getElementById(id.id);
+            if (confirm("Do you really want all the content? It will take time .")) {
+                //alert("You selected all. Please wait!!");
+            } else {
+                populateTree(id.id);
+            }
+
+        }
+    }
 
     function GetCrumb(id)
     {
@@ -301,12 +315,14 @@ function populateTree(parentid)
             datatype: "jsonp",
             beforeSend: function(){
                 $('#loaded').show();
+                $('#sort_ids').hide();
                 //checkInternetConnection();
             },
             success: function(result){
                 console.log(result);
                 if(result != null && result == 'success'){
                     $('#loaded').hide();
+                    $('#sort_ids').show();
                     window.location.href = '/content/app_available/';
                 }
                 else{

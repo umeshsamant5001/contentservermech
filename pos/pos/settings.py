@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'core',
     'channels',
     'content_viewer',
+    'push',
 
     #custom api import
     'core_api',

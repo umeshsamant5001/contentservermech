@@ -1,5 +1,5 @@
 {% load static %}
-<link rel="stylesheet" href="{% static '/css/jumbotron.css'%}">
+<!-- <link rel="stylesheet" href="{% static '/css/jumbotron.css'%}"> -->
 <!-- <script src='https://code.jquery.com/jquery-3.2.1.min.js'></script> -->
 <style type="text/css">
     @media (min-width: 768px) {
@@ -13,7 +13,7 @@
 .box-shadow { box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .5); }
 </style>
 
-<nav class="navbar navbar-expand-md navbar-default fixed-top navbar-dark bg-dark border-bottom box-shadow">
+<nav class="navbar navbar-expand-md navbar-default fixed-top navbar-dark bg-dark border-bottom ">
       <a class="navbar-brand" href="#">
           <img src="{% static '/images/logop1.png' %}" alt="">
       </a>
@@ -26,13 +26,18 @@
           <li class="nav-item active">
             <a class="nav-link" href="{% url 'core:programs' %}">
                 <button class="btn btn-outline-warning my-2 my-sm-0" type="submit">
-                    Home <span class="sr-only">(current)</span>
+                    Data Download<span class="sr-only">(current)</span>
                 </button>
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{% url 'content_viewer:app_available' %}">
-                <button class="btn btn-outline-warning my-2 my-sm-0" type="submit">Apps</button>
+                <button class="btn btn-outline-warning my-2 my-sm-0" type="submit">Content Download</button>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">
+                <button class="btn btn-outline-warning my-2 my-sm-0" type="submit">Push Data</button>
             </a>
           </li>
         </ul>
@@ -63,6 +68,5 @@
         </div>
       {% endif %}
     </nav>
-    <hr>
-    <br>
-    <br>
+    <!-- <hr> -->
+   
