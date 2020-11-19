@@ -133,6 +133,10 @@ def resource_view(request, NodeId):
             context['video_play'] = queryset
             # print(context)
             return render(request, "content_viewer/content_play.html", context=context)
+        elif qs.FileType == "Content" and qs.fileName == '':
+            context['no_content'] = queryset
+            # print(context)
+            return render(request, "content_viewer/content_play.html", context=context)
         elif qs.FileType == "Content" and qs.fileName.endswith('.m4v'):
             vid_m4v_path1 = os.path.join(vid_m4v_path, qs.fileName)
             # print("vid_m4v_path1!!!", vid_m4v_path1, vid_m4v_path, qs.fileName)

@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <style type="text/css">
+        .success{
+            list-style: none;
+            background-color: #26eda4;
+            color: white;
+            box-shadow: 12px 12px 12px #e61c66;
+            text-align: center;
+        }
+    </style>
+    <br>
+    <br>
+    <!-- {% url 'push:usage' %} -->
+      <div class="row col-md-12">
+        <p class="span6" style="float: none; margin:auto;">
+        <a class="btn btn-warning my-2 my-sm-0" id="usage" name="push" type="button"
+         href="{% url 'push:usage' %}">
+            Upload To Server &#8593</a> 
+        </p>
+        <p class="span6" style="float: none; margin:auto;">
+            <a class="btn btn-warning my-2 my-sm-0" id="backup" type="button" href="{% url 'push:backup' %}">
+                Backup Data
+            </a> 
+            </p>
+            <p class="span6" style="float: none; margin:auto;">
+                <a class="btn btn-warning my-2 my-sm-0" id="desktop" type="button" href="#">DeskTop Data</a> 
+                </p>
+      </div>
+      <!-- The Modal -->
+      <div class="container modal text-center" id="popup">
+        <div class="modal-dialog">
+          <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+              <h4 class="modal-title">Data Push</h4>
+              <!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body" id="pushdetails">
+                <div class="loading" id="loaded" style="display:none;">
+                    <div class="loader">
+                    </div>
+                    <button class="btn btn-primary" disabled>
+                                <span class="spinner-grow spinner-grow-sm"></span>
+                                Please wait while data is uploading!!
+                        </button>
+                </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- The Modal -->
+      <div class="container modal text-center" id="popupBkp">
+        <div class="modal-dialog">
+          <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+              <h4 class="modal-title">Data Push</h4>
+              <!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body" id="pushdetailsBkp">
+                <div class="loading" id="loadedBkp" style="display:none;">
+                    <div class="loader">
+                    </div>
+                    <button class="btn btn-primary" disabled>
+                                <span class="spinner-grow spinner-grow-sm"></span>
+                                Please wait while we take backup of your data!!
+                        </button>
+                </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    <script>
+        
+        $('#usage').click(function () {
+                $.ajax({
+                    type: 'POST',
+                    crossDomain: true,
+                    dataType: "jsonp",
+                    beforeSend: function(){
+                        $('#popup').show();
+                        $('#loaded').show();
+                    },
+                    success: function(){
+                        $('#msgs').show();
+                        $('#popup').hide();
+                        $('#loaded').hide();
+                    },
+                    error: function (error) {
+                        console.log('error; ' + eval(error));
+                    }
+                });
+            });
+        
+        $('#backup').click(function () {
+                $.ajax({
+                    type: 'POST',
+                    crossDomain: true,
+                    dataType: "jsonp",
+                    beforeSend: function(){
+                        $('#popupBkp').show();
+                        $('#loadedBkp').show();
+                    },
+                    success: function(){
+                        $('#msgs').show();
+                        $('#popupBkp').hide();
+                        $('#loadedBkp').hide();
+                    },
+                    error: function (error) {
+                        console.log('error; ' + eval(error));
+                    }
+                });
+            });
+
+    </script>
+
+{% endblock %}

@@ -122,6 +122,15 @@
                     {% endif %}
                   {% endfor %}
                 
+                {% elif no_content %}
+                  {% for object in no_content %}
+                    {% if object.FileType == "Content" and object.appavailableindb.NodeType == "Resource" %}
+                      <div class="jumbotron">
+                        <p style="font-weight: bold;">This file is not available!!</p>
+                      </div><br>
+                    {% endif %}
+                  {% endfor %}
+                
                 <!-- wrong format  -->
                 {% else %}
                   {% for object in wrong_format %}

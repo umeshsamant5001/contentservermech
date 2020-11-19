@@ -180,19 +180,22 @@ class Downloader(object):
                     path_to_put = os.path.join(
                         self.wrong_extension, str(os.path.basename(file_url)))
                 try:
-                    file_to_get = requests.get(
-                        file_url, stream=True, timeout=10)
-                    with open(path_to_put, "wb") as target:
-                        total_length = int(
-                            file_to_get.headers.get('content-length'))
-                        for chunk in progress.bar(file_to_get.iter_content(chunk_size=1024),
-                                                    expected_size=(total_length/1024) + 1):
-                            if chunk:
-                                target.write(chunk)
-                                target.flush()
+                    if file_url == '':
+                        continue
+                    else:
+                        file_to_get = requests.get(
+                            file_url, stream=True, timeout=10)
+                        with open(path_to_put, "wb") as target:
+                            total_length = int(
+                                file_to_get.headers.get('content-length'))
+                            for chunk in progress.bar(file_to_get.iter_content(chunk_size=1024),
+                                                        expected_size=(total_length/1024) + 1):
+                                if chunk:
+                                    target.write(chunk)
+                                    target.flush()
 
-                except requests.exceptions.ConnectionError:
-                    print(" no internet ")
+                except requests.exceptions.ConnectionError as ierror:
+                    print(" no internet ", ierror)
                     return False
 
         except requests.exceptions.ConnectionError as e_error:
