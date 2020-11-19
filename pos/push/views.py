@@ -52,7 +52,7 @@ def push_usageData(request):
     randstr = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(n))
     
     while True:
-        fetch_url = "http://localhost:8000/api/usagedata/?table_name=USAGEDATA&page=%s&page_size=15" % i
+        fetch_url = "http://192.168.4.1:8000/api/usagedata/?table_name=USAGEDATA&page=%s&page_size=15" % i
         print("url is ", fetch_url)
 
         #post api
@@ -96,7 +96,7 @@ def push_usageData(request):
                 if response.status_code == 200:
                     for obj in lstscore['results']:
                         show_id = obj['id']
-                        url_del = "http://localhost:8000/api/usagedata/" + str(show_id)
+                        url_del = "http://192.168.4.1:8000/api/usagedata/" + str(show_id)
                         try:
                             res_del = requests.delete(url_del, headers=headers)
                         except Exception as e:
@@ -126,7 +126,7 @@ def backup(request):
 
     while True:
         #get api
-        usage_url = "http://localhost:8000/api/usagedata/?table_name=USAGEDATA&page=%s&page_size=15" % i
+        usage_url = "http://192.168.4.1:8000/api/usagedata/?table_name=USAGEDATA&page=%s&page_size=15" % i
         #post api
         # post_url = "http://www.rpi.prathamskills.org/api/pushdata/post/"
 
