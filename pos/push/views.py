@@ -45,14 +45,13 @@ def create_directory():
     return homeDir
 
 def push_usageData(request):
-    # create_directory()
     i = 1
     n = 6
     serial_line = ''
     randstr = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(n))
     
     while True:
-        fetch_url = "http://192.168.4.1:8000/api/usagedata/?table_name=USAGEDATA&page=%s&page_size=15" % i
+        fetch_url = "http://localhost:8000/api/usagedata/?table_name=USAGEDATA&page=%s&page_size=15" % i
         print("url is ", fetch_url)
 
         #post api
@@ -74,9 +73,7 @@ def push_usageData(request):
 
         # checks the value of count
         if lstscore['count'] == 0:
-            context = {}
-            context["counts"] = "Data is not present!!"
-            return render(request, 'push/data_to_push.html', context=context)
+            return render(request, 'push/data_to_push.html')
         
         else:
             headers = {
@@ -96,7 +93,7 @@ def push_usageData(request):
                 if response.status_code == 200:
                     for obj in lstscore['results']:
                         show_id = obj['id']
-                        url_del = "http://192.168.4.1:8000/api/usagedata/" + str(show_id)
+                        url_del = "http://localhost:8000/api/usagedata/" + str(show_id)
                         try:
                             res_del = requests.delete(url_del, headers=headers)
                         except Exception as e:
@@ -126,7 +123,7 @@ def backup(request):
 
     while True:
         #get api
-        usage_url = "http://192.168.4.1:8000/api/usagedata/?table_name=USAGEDATA&page=%s&page_size=15" % i
+        usage_url = "http://localhost:8000/api/usagedata/?table_name=USAGEDATA&page=%s&page_size=15" % i
         #post api
         # post_url = "http://www.rpi.prathamskills.org/api/pushdata/post/"
 
@@ -161,5 +158,11 @@ def backup(request):
         i=i+1
 
 
+    return render(request, 'push/data_to_push.html')
+
+
+def clear_data(request):
+    instance = UsageData.objects.all()
+    instance.delete()
     return render(request, 'push/data_to_push.html')
 

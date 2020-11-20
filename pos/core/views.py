@@ -10,6 +10,7 @@ from pathlib import Path
 from django.db.models import F
 from django.contrib.auth.models import User
 from .models import VillageDataStore
+from channels.models import AppAvailableInDB, AppListFromServerData, FileDataToBeStored
 import requests
 import json
 
@@ -28,8 +29,11 @@ def check_internet(request):
 
 def home(request):
     try:
+        applistindb = AppListFromServerData.objects.all()
+        appindb = AppAvailableInDB.objects.all()
+        filedataindb = FileDataToBeStored.objects.all()
         user_data = User.objects.all()
-        if not user_data:
+        if not user_data and not appindb and not applistindb and not filedataindb:
             # fetching programs from server
             programs_urls = "http://swap.prathamcms.org/api/program"
             program_api_response = requests.request(
@@ -41,7 +45,7 @@ def home(request):
             }
             return render(request, 'setup_index.html', context)
         else:
-            return HttpResponseRedirect(reverse('account:user_login'))
+            return HttpResponseRedirect(reverse('content_viewer:app_available'))
     except Exception as e:
         print("setup error is:---", e)
         return check_internet(request)

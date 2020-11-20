@@ -14,7 +14,7 @@ from channels.models import AppListFromServerData, AppAvailableInDB, FileDataToB
 system_os = platform.system()
 
 # checking the list of available apps
-class AppAvailableListView(LoginRequiredMixin, ListView):
+class AppAvailableListView(ListView):
     model = AppListFromServerData
     template_name = "content_viewer/app_available.html"
 
@@ -30,7 +30,7 @@ class AppAvailableListView(LoginRequiredMixin, ListView):
         return context
 
 
-class ParentAppView(LoginRequiredMixin, ListView):
+class ParentAppView(ListView):
     # model = AppAvailableInDB
     template_name = "content_viewer/app_details.html"
 
@@ -48,7 +48,7 @@ class ParentAppView(LoginRequiredMixin, ListView):
         return context
 
 
-class ChildrenAppView(LoginRequiredMixin, ListView):
+class ChildrenAppView(ListView):
     template_name = "content_viewer/child_details.html"
 
     def get_queryset(self, *args, **kwargs):

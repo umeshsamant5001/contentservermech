@@ -27,6 +27,7 @@
                     {% comment %} <p class="card-text">{{ object.AppDesc }}</p> {% endcomment %}
                     <hr>
                     <div class="d-flex justify-content-between align-items-center">
+                      {% if request.user.is_authenticated %}
                       &nbsp;&nbsp;
                       <div class="btn-group">
                         <a href="{% url 'content_viewer:parent_details' AppId=object.AppId %}">
@@ -36,6 +37,12 @@
                         <a href="{% url 'channels:channel_list' %}">
                             <button class="btn btn-outline-primary my-2 my-sm-0" type="button">Update</button>
                         </a>
+                        {% else %}
+                          <a href="{% url 'content_viewer:parent_details' AppId=object.AppId %}">
+                            <button class="btn btn-outline-primary my-2 my-sm-0" type="button">View</button>
+                        </a>
+                          </p>
+                        {% endif %}
                       </div>
                     </div>
                   </div>
@@ -51,19 +58,35 @@
                   <img src='{% static "/images/error_outline-24px.svg" %}'>Content is not Available Please Download
                   </p>
                 </div>
+                {% if request.user.is_authenticated %}
                 <div class="row col-md-12">
                   <p class="span6" style="float: none; margin:auto;">
-                  <a class="btn btn-outline-success my-2 my-sm-0" type="button" href="{% url 'channels:channel_list' %}"><img src='{% static "/images/get_app-24px.svg" %}'>Download</a> 
+                  <a class="btn btn-outline-success my-2 my-sm-0" type="button" href="{% url 'channels:channel_list' %}">
+                    <img src='{% static "/images/get_app-24px.svg" %}'>Download</a> 
                   </p>
                 </div>
-                
-                  
-                
+                {% else %}
+
+                <div class="row col-md-12">
+                  <p class="span6" style="float: none; margin:auto;">
+                  <a class="btn btn-outline-success my-2 my-sm-0" type="button" onclick="downloader()" href="{% url 'account:user_login' %}">
+                    <img src='{% static "/images/get_app-24px.svg" %}'>Download</a> 
+                  </p>
+                </div>
+
+                {% endif %}
+
               {% endfor %}
               </div>
             </div>
           </div>
   
       </main>
+
+      <script>
+          function downloader(){
+            alert("you need to login to downlaod the content!")
+          }
+      </script>
 
 {% endblock  %}
