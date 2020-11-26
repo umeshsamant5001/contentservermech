@@ -8,6 +8,7 @@ from content_viewer.converter import m4v_to_mp4, wav_to_mp3
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import TemplateView, ListView, DetailView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
+from core.models import DeskTopData
 from channels.models import AppListFromServerData, AppAvailableInDB, FileDataToBeStored
 
 
@@ -95,6 +96,7 @@ def resource_view(request, NodeId):
     general_path = os.getcwd()
     app_name = AppListFromServerData.objects.all()
     parent_db = AppAvailableInDB.objects.filter(NodeId=NodeId)
+    parent_db_title = AppAvailableInDB.objects.filter(NodeId=NodeId)
     combined_results = ''
     chaining_queries = []
         
@@ -110,6 +112,8 @@ def resource_view(request, NodeId):
     combined_results = list(chain(chaining_queries[::-1]))
     context['chaining_queries'] = combined_results
     context['app_name'] = app_name
+    context['node_id'] = NodeId
+    context['parent_db_title'] = parent_db_title
     # print("genral path is ", general_path, zip_path)
     if system_os == "Windows":
         zip_path = os.path.join(zip_path, r'storage\content\zips')
@@ -164,4 +168,22 @@ def resource_view(request, NodeId):
             return render(request, "content_viewer/content_play.html", context=context)
 
 
-    
+def desktop_score_data(request):
+    if request.method == 'GET':
+        try:
+            node_id = request.GET.get('NodeId')
+            startTime = request.GET.get('startTime')
+            endTime = request.GET.get('endTime')
+            duration = request.GET.get('duration')
+            user = request.user
+            if user.is_authenticated:
+                logged_in_user = user.username
+            else:
+                logged_in_user = "guest"
+
+            desktop_data = DeskTopData.objects.create(node_id=node_id, start_time=startTime, 
+                                                      end_time=endTime, duration=duration, user=user)
+        except Exception as e:
+            print("desktop save error is ", e)
+            return False
+    return HttpResponse("success")
