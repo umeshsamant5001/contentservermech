@@ -5,11 +5,14 @@ import random
 import platform
 import datetime
 import requests
+import time
 from pathlib import Path
 from django.contrib import messages
 from core.models import UsageData
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.conf import settings
+
 
 system_os = platform.system()
 print(system_os)
@@ -55,7 +58,7 @@ def push_usageData(request):
         print("url is ", fetch_url)
 
         #post api
-        post_url = "http://www.rpi.prathamskills.org/api/pushdata/post/"
+        post_url = "http://rpi.prathamskills.org/api/KolibriSession/Post"
 
         response = requests.get(fetch_url)
 
@@ -72,15 +75,24 @@ def push_usageData(request):
         # lstscore['serial_id'] = serial_line
 
         # checks the value of count
-        if lstscore['count'] == 0:
+        if lstscore['count'] == 0 and lstscore['next'] is None:
+            print("no data")
             return render(request, 'push/data_to_push.html')
-        
-        else:
-            headers = {
-                "content-type": "application/json"
-            }
-            data = lstscore  # providing lstscore value to data variable
+        elif lstscore['count'] != 0 and lstscore['next'] is None:
+            try:
+                data = lstscore
+                response_post = requests.post(
+                    post_url,
+                    headers=headers,
+                    data=json.dumps(data),
+                )
 
+                print("elif", response_post.status_code, response_post.reason)
+            except Exception as bkp_error_next:
+                print("bkp error is ", bkp_error_next)
+            return render(request, 'push/data_to_push.html')
+        else:
+            data = lstscore  # providing lstscore value to data variable
             try:
                 response_post = requests.post(
                     post_url,
@@ -88,30 +100,12 @@ def push_usageData(request):
                     data=json.dumps(data),
                 )
 
-                print(response_post.status_code, response_post.reason)
-            
-                if response.status_code == 200:
-                    for obj in lstscore['results']:
-                        show_id = obj['id']
-                        url_del = "http://localhost:8000/api/usagedata/" + str(show_id)
-                        try:
-                            res_del = requests.delete(url_del, headers=headers)
-                        except Exception as e:
-                            print("error e is ", e)
-                            return False
-                    try:
-                        with open(os.path.join(create_directory(), randstr + str(datetime.datetime.now()) + '.json'),
-                                      "w") as outfile:
-                                json.dump(lstscore, outfile, indent=4, sort_keys=True)
-                    except Exception as err:
-                        print("cannot create backup due to ", err)
-                else:
-                    return False
+                print("el", response_post.status_code, response_post.reason)
 
             except Exception as e1:
                 print("error e1 is ", e1)
                 return False
-
+        i=i+1
     return render(request, 'push/data_to_push.html')
 
 
@@ -145,8 +139,8 @@ def backup(request):
             return render(request, 'push/data_to_push.html')
         else:
             print("lstscore ", lstscore['next'])
-            import time
-            time.sleep(3)
+            # import time
+            # time.sleep(3)
             try:
                 with open(os.path.join(create_directory(),
                                                    randstr + str(datetime.datetime.now()) + '.json'),
@@ -154,6 +148,7 @@ def backup(request):
                                 json.dump(lstscore, outfile, indent=4, sort_keys=True)
             except Exception as bkp_error:
                 print("bkp error is ", bkp_error)
+            return render(request, 'push/data_to_push.html')
 
         i=i+1
 
@@ -164,5 +159,106 @@ def backup(request):
 def clear_data(request):
     instance = UsageData.objects.all()
     instance.delete()
+    return render(request, 'push/data_to_push.html')
+
+def desktop_data_to_server(request):
+    i = 1
+    n = 6
+    serial_line = ''
+    randstr = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(n))
+
+    # session_key = request.COOKIES[settings.SESSION_COOKIE_NAME]
+    # print(session_key)
+    # time.sleep(10)
+
+    # print("push session ", request.session.get('session_id', randstr_session))
+    # time.sleep(10)
+
+    while True:
+        #get api
+        desktop_url = "http://localhost:8000/api/desktopdata/?page=%s&page_size=15" % i
+        appList_url = "http://localhost:8000/api/channel/AppList/"
+
+        print(desktop_url)
+        print(appList_url)
+
+        # session_id = 
+
+        # post api
+        post_url = "http://rpi.prathamskills.org/api/KolibriSession/Post"
+        
+        # desktop data url
+        desktop_response = requests.get(desktop_url, headers=headers)
+        desktop_result = json.loads(desktop_response.content.decode('utf-8'))
+
+        # pi id data to be collected
+        # os.system('cat /proc/cpuinfo > serial_data.txt')
+        # serial_file = open('serial_data.txt', "r+")
+        # for line in serial_file:
+        #     if line.startswith('Serial'):
+        #         serial_line = line
+        #
+        # desktop_result['serial_id'] = serial_line
+
+        # desktop_result['session_id'] = 
+        # desktop_result['serial_id'] = 
+
+        # app list url
+        appList_response = requests.get(appList_url, headers=headers)
+        appList_result = json.loads(appList_response.content.decode('utf-8'))
+
+        if desktop_response.status_code == 404 and appList_response.status_code == 404:
+            return render(request, 'push/data_to_push.html')
+        elif desktop_response.status_code == 404:
+            return render(request, 'push/data_to_push.html')
+        else:
+            pass
+
+        if desktop_result['count'] == 0 and desktop_result['next'] is None:
+            # print("no data")
+            return render(request, 'push/data_to_push.html')
+        elif desktop_result['count'] != 0 and desktop_result['next'] is None:
+            try:
+                desktop_data_to_post = {
+                    "desktop_result": desktop_result,
+                    "appList_result": appList_result,
+                    "session_id": randstr,
+                    "serial_id": randstr,
+                }
+                # response_post = requests.post(
+                #     post_url,
+                #     headers=headers,
+                #     data=json.dumps(desktop_data_to_post),
+                # )
+                # print(response_post.status_code, response_post.reason)
+                from pprint import pprint
+                pprint(desktop_data_to_post)
+
+            except Exception as e:
+                return False
+            return render(request, 'push/data_to_push.html')
+        else:
+            try:
+                desktop_data_to_post = {
+                    "desktop_result": desktop_result,
+                    "appList_result": appList_result,
+                    "session_id": randstr,
+                    "serial_id": randstr,
+                }
+                # response_post = requests.post(
+                #     post_url,
+                #     headers=headers,
+                #     data=json.dumps(desktop_data_to_post),
+                # )
+                # print(response_post.status_code, response_post.reason)
+                from pprint import pprint
+                pprint(desktop_data_to_post)
+
+            except Exception as e:
+                return False
+            # return render(request, 'push/data_to_push.html')
+
+        i=i+1
+
     return render(request, 'push/data_to_push.html')
 

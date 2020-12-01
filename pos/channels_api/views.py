@@ -11,10 +11,10 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 # local imports
 from channels.models import (AppListFromServerData, AppAvailableInDB,
-                             FileDataToBeStored, FileUpload)
+                             FileDataToBeStored, FileUpload, JsonDataStorage)
 from .serializers import (AppListSerializer, AppAvailableSerializer,
                           FileDataSerializer, AppNodeDetailListSerializer,
-                          FileUploadSerializer)
+                          FileUploadSerializer, JsonDataStorageSerializer)
 
 
 class AppView(viewsets.ModelViewSet):
@@ -86,3 +86,11 @@ class FileUploadView(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(uploaded_file=self.request.data.get('uploaded_file'))
+
+
+class JsonDataStorageView(viewsets.ModelViewSet):
+    queryset = JsonDataStorage.objects.all()
+    serializer_class = JsonDataStorageSerializer
+    filter_backends = (DjangoFilterBackend, SearchFilter)
+    filter_fields = ('NodeId', 'JsonId',)
+    pagination_class = PageNumberPagination

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from core.models import VillageDataStore, UsageData
+from core.models import VillageDataStore, UsageData, DeskTopData
 
 
 class VillageDataStoreSerializer(serializers.ModelSerializer):
@@ -23,3 +23,9 @@ class UsageDataSerializer(serializers.ModelSerializer):
         fields = (
 			'id', 'data', 'filter_name', 'table_name', 'created_at',
             )
+
+
+class DeskTopDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DeskTopData
+        fields = '__all__'

@@ -7,6 +7,7 @@ urlpatterns = [
     path('', views.push_data, name="push-data"),
     path('usage/', views.push_usageData, name="usage"),
     path('backup/', views.backup, name="backup"),
-    path('clear/', views.clear_data, name="clear")
+    path('clear/', views.clear_data, name="clear"),
+    path('desktop/', views.desktop_data_to_server, name="desktop"),
 ]
 

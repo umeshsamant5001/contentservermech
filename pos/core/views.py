@@ -6,13 +6,17 @@ from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.hashers import make_password
 from pprint import pprint
+from django.conf import settings
 from pathlib import Path
 from django.db.models import F
 from django.contrib.auth.models import User
 from .models import VillageDataStore
 from channels.models import AppAvailableInDB, AppListFromServerData, FileDataToBeStored
 import requests
+import string
+import random
 import json
+
 
 homeDir = str(Path.home())
 
@@ -33,6 +37,10 @@ def home(request):
         appindb = AppAvailableInDB.objects.all()
         filedataindb = FileDataToBeStored.objects.all()
         user_data = User.objects.all()
+
+        n = 12
+        randstr_session = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(n))
+
         if not user_data and not appindb and not applistindb and not filedataindb:
             # fetching programs from server
             programs_urls = "http://swap.prathamcms.org/api/program"
@@ -43,8 +51,12 @@ def home(request):
             context = {
                 'program_result': program_api_result
             }
+            request.session['session_id'] = randstr_session
+            print(request.session.get('session_id', randstr_session))
             return render(request, 'setup_index.html', context)
         else:
+            request.session['session_id'] = randstr_session
+            print(request.session.get('session_id', randstr_session))
             return HttpResponseRedirect(reverse('content_viewer:app_available'))
     except Exception as e:
         print("setup error is:---", e)
