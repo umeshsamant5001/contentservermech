@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.hashers import make_password
 from pprint import pprint
 from django.conf import settings
+from django.contrib.sessions.models import Session
 from pathlib import Path
 from django.db.models import F
 from django.contrib.auth.models import User
