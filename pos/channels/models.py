@@ -75,3 +75,20 @@ class FileDataToBeStored(models.Model):
 class FileUpload(models.Model):
     uploaded_file = models.FileField(upload_to='media/')
 
+
+class JsonDataStorage(models.Model):
+    JsonId      =     models.CharField(max_length=50, default='')
+    NodeId      =     models.CharField(max_length=50, default='')
+    JsonType    =     models.CharField(max_length=50, default='') 
+    JsonData    =     JSONField(default={}, blank=True)
+    DateUpdated =     models.CharField(max_length=100, default='',
+                                   null=True, blank=True)
+
+    @classmethod
+    def create(cls, JsonId, NodeId, JsonType, JsonData, DateUpdated):
+        json_data_storage = cls(JsonId=JsonId, NodeId=NodeId, JsonType=JsonType, JsonData=JsonData,
+                       DateUpdated=DateUpdated)
+        return json_data_storage
+
+    def __str__(self):
+        return self.JsonId

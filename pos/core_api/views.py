@@ -18,8 +18,8 @@ from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 
 # local imports
-from core.models import VillageDataStore, UsageData
-from .serializers import VillageDataStoreSerializer, UsageDataSerializer
+from core.models import VillageDataStore, UsageData, DeskTopData
+from .serializers import VillageDataStoreSerializer, UsageDataSerializer, DeskTopDataSerializer
 
 N = 6
 # homeDir = ''
@@ -153,4 +153,10 @@ class UsageDataView(viewsets.ModelViewSet):
 
         show_data()
 
-# csrfmiddlewaretoken
+
+class DeskTopDataView(viewsets.ModelViewSet):
+    queryset = DeskTopData.objects.order_by('id')
+    serializer_class = DeskTopDataSerializer
+    filter_backends = (DjangoFilterBackend, SearchFilter,)
+    filter_fields = ('node_id',)
+    pagination_class = PageNumberPagination

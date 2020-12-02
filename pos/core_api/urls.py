@@ -7,6 +7,7 @@ from django.urls import path, include
 router = routers.DefaultRouter()
 router.register('datastore', views.VillageDataStoreView, basename='datastore')
 router.register('usagedata', views.UsageDataView, basename='usagedata')
+router.register('desktopdata', views.DeskTopDataView, basename='desktopdata')
 
 
 urlpatterns = [

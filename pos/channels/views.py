@@ -11,7 +11,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.views.generic import View, TemplateView, ListView
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from .models import AppAvailableInDB, AppListFromServerData, FileDataToBeStored
+from .models import (AppAvailableInDB, AppListFromServerData,
+                     FileDataToBeStored, JsonDataStorage)
 
 # rest framework imports
 from rest_framework import status
@@ -136,13 +137,13 @@ class DownloadAndSaveView(LoginRequiredMixin, View):
                 response_data = downloading.download_files_with_qs(detail_node_url, {"id": ids})
 
                 if response_data is False:
-                    print("it is false")
+                    # print("it is false")
                     return HttpResponseRedirect('/channel/no_internet/')
                 else:
-                    print("it is true")
+                    # print("it is true")
                     for detail in detail_node_json_val:
                         try:
-                            print("saving db")
+                            # print("saving db")
                             # time.sleep(5)
                             NodeId = detail['NodeId']
                             NodeType = detail['NodeType']
@@ -165,7 +166,7 @@ class DownloadAndSaveView(LoginRequiredMixin, View):
                                     FileUrl = file['FileUrl']
                                     DateUpdated = file['DateUpdated']
                                     fileName = os.path.basename(FileUrl)
-                                    print("filetype is", FileType)
+                                    # print("filetype is", FileType)
                                     if not FileDataToBeStored.objects.filter(NodeId=NodeId, FileId=FileId).exists():
                                         file_in_db = FileDataToBeStored.objects.create(appavailableindb=app_in_db,
                                                                                         FileId=FileId, NodeId=NodeId,
@@ -177,6 +178,8 @@ class DownloadAndSaveView(LoginRequiredMixin, View):
                         except requests.exceptions.ConnectionError:
                             print("db error")
                             return HttpResponseRedirect('/channel/no_internet/')
+                
+                json_data_storage_view(request, ids)
 
             except requests.exceptions.ConnectionError:
                 print("downlaod error ")
@@ -185,6 +188,33 @@ class DownloadAndSaveView(LoginRequiredMixin, View):
         # return HttpResponse("success!!")
         print("successfully saved!")
         return HttpResponse("success")
+
+
+def json_data_storage_view(request, id):
+    json_url = "http://fcapp.openiscool.org/api/AppNodeJsonListByNode?id=%s" % id
+    json_response = requests.get(json_url, headers=headers)
+    json_result = json.loads(json_response.content.decode('utf-8'))
+
+    # print("inside json ")
+
+    try:
+        for result in json_result:
+            JsonId = result['JsonId']
+            NodeId = result['NodeId']
+            JsonType = result['JsonType']
+            JsonData = result['JsonData']
+            DateUpdated = result['DateUpdated']
+
+            if not JsonDataStorage.objects.filter(NodeId=NodeId).exists():
+                json_data_storage = JsonDataStorage.objects.create(JsonId=JsonId, NodeId=NodeId, JsonType=JsonType, JsonData=JsonData,
+                                                                    DateUpdated=DateUpdated)
+                json_data_storage.save()
+    
+    except requests.exceptions.ConnectionError as con_err:
+        print("json error ", con_err)
+        return HttpResponseRedirect('/channel/no_internet/')
+
+    return HttpResponse(json_result)
 
 
 class NoInternetView(TemplateView):

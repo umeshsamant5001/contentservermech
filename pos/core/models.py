@@ -24,3 +24,17 @@ class UsageData(models.Model):
     filter_name = models.CharField(max_length=100, default="Enter filter name")
     table_name = models.CharField(max_length=100, default="Enter table name")
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+
+
+class DeskTopData(models.Model):
+    node_id = models.CharField(max_length=100, default="")
+    start_time = models.CharField(max_length=100, default="")
+    end_time = models.CharField(max_length=100, default="")
+    duration = models.CharField(max_length=100, default="")
+    user = models.CharField(max_length=100, default="")
+
+    @classmethod
+    def create(cls, node_id, start_time, end_time):
+        desktop_data = cls(node_id=node_id, start_time=start_time, 
+                            end_time=end_time, duration=duration, user=user)
+        return desktop_data

@@ -11,5 +11,6 @@ urlpatterns = [
     path('show_details/<str:AppId>/<str:AppName>/', views.ShowDetailsOfChannelView.as_view(), 
         name='show_details'),
     path('downloads/', views.DownloadAndSaveView.as_view(), name='downloads'),
+    path('json_data/<str:id>/', views.json_data_storage_view, name='json_data'),
     path('no_internet/', views.NoInternetView.as_view(), name='no_internet'),
 ]

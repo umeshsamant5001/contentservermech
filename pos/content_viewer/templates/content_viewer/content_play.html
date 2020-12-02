@@ -22,37 +22,9 @@
                       <li><a href="{% url 'content_viewer:child_details' NodeId=ids.NodeId %}">{{ ids.NodeTitle }}</a></li>
                   {% endfor %}
               {% endfor %}
-              {% if game_play %}
-                  {% for object in game_play %}
-                    {% if object.FileType == "Content" and object.appavailableindb.NodeType == "Resource" %}
-                      <li>{{object.appavailableindb.NodeTitle}}</li>
-                    {% endif %}
-                  {% endfor %}
-              {% elif pdf_play %}
-                  {% for object in pdf_play %}
-                    {% if object.FileType == "Content" and object.appavailableindb.NodeType == "Resource" %}
-                      <li>{{object.appavailableindb.NodeTitle}}</li>
-                    {% endif %}
-                  {% endfor %}
-              {% elif video_play %}
-                  {% for object in video_play %}
-                    {% if object.FileType == "Content" and object.appavailableindb.NodeType == "Resource" %}
-                      <li>{{object.appavailableindb.NodeTitle}}</li>
-                    {% endif %}
-                  {% endfor %}
-              {% elif audio_play %}
-                  {% for object in audio_play %}
-                    {% if object.FileType == "Content" and object.appavailableindb.NodeType == "Resource" %}
-                      <li>{{object.appavailableindb.NodeTitle}}</li>
-                    {% endif %}
-                  {% endfor %}
-              {% elif wrong_format %}
-                  {% for object in wrong_format %}
-                    {% if object.FileType == "Content" and object.appavailableindb.NodeType == "Resource" %}
-                      <li>{{object.appavailableindb.NodeTitle}}</li>
-                    {% endif %}
-                  {% endfor %}
-              {% endif %}
+              {% for qs in parent_db_title %}
+                <li>{{ qs.NodeTitle }}</li>
+            {% endfor %}
             </ul>
         </nav>
     
@@ -146,5 +118,69 @@
           </div>
   
       </main>
+
+      <script>
+          $(document).ready(function () {
+            var startTime = new Date();
+            console.log(startTime);
+            node_id = "{{ node_id }}";
+            console.log(node_id);
+            requested_url = '/content/resource/'+node_id
+              console.log(requested_url);
+              $(window).on("beforeunload", function (){
+                var endTime = new Date();
+                var duration = (endTime - startTime);
+                duration = duration/1000;
+                console.log(duration);
+                $.ajax({
+                  url: requested_url,
+                  type: 'GET',
+                  data: {
+                    'NodeId': node_id,
+                    'startTime': startTime,
+                    'endTime': endTime,
+                    'duration': duration
+                  },
+                  crossDomain: true,
+                  datatype: 'jsonp',
+                  // async: false,
+                });
+              });
+          });
+          
+          $(document).ready(function () {
+            var startTime = new Date();
+            console.log(startTime);
+            node_id = "{{ node_id }}";
+            console.log(node_id);
+            requested_url = '/content/score/'
+            console.log(requested_url);
+            $(window).on("beforeunload", function (){
+              var endTime = new Date();
+              var duration = endTime - startTime;
+              console.log(duration);
+              $.ajax({
+                url: requested_url,
+                type: 'POST',
+                async: false,
+                data: {
+                  'NodeId': node_id,
+                  'startTime': startTime,
+                  'endTime': endTime,
+                  'duration': duration,
+                  csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                crossDomain: true,
+                datatype: 'json',
+                success: function(data){
+                  console.log(data);
+                },
+                error: function (error) {
+                    console.log('error; ' + eval(error));
+                },
+              });
+            })
+          })
+      </script>
 
 {% endblock  %}

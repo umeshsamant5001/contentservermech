@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from channels.models import (AppListFromServerData, AppAvailableInDB,
-                             FileDataToBeStored, FileUpload)
+                             FileDataToBeStored, FileUpload, JsonDataStorage)
 
 
 class AppListSerializer(serializers.ModelSerializer):
@@ -39,3 +39,10 @@ class FileUploadSerializer(serializers.ModelSerializer):
     class Meta:
         model = FileUpload
         fields = ['id', 'uploaded_file']
+
+
+class JsonDataStorageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = JsonDataStorage
+        fields = ['id', 'JsonId', 'NodeId', 'JsonType', 'JsonData', 'DateUpdated']

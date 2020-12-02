@@ -9,6 +9,7 @@ router.register('AppNode', views.AppAvailableView, basename='AppNode')
 router.register('AppNodeDetailListByNode', views.AppNodeDetailListByNodeView,
                 basename='AppNodeDetailListByNode')
 router.register('FileUpload', views.FileUploadView, basename='FileUpload')
+router.register('AppNodeJsonListByNode', views.JsonDataStorageView, basename='AppNodeJsonListByNode')
 
 
 urlpatterns = [
