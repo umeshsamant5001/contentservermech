@@ -54,18 +54,18 @@ def home(request):
             }
             if not request.session.has_key('session_id'):
                 request.session['session_id'] = randstr_session
-                print("if ", request.session.get('session_id', randstr_session))
+                # print("if ", request.session.get('session_id', randstr_session))
             else:
                 request.session['session_id'] = request.session.get('session_id')
-                print("ell ", request.session.get('session_id', randstr_session))
+                # print("ell ", request.session.get('session_id', randstr_session))
             return render(request, 'setup_index.html', context)
         else:
             if not request.session.has_key('session_id'):
                 request.session['session_id'] = randstr_session
-                print("elif " ,request.session.get('session_id', randstr_session))
+                # print("elif " ,request.session.get('session_id', randstr_session))
             else:
                 request.session['session_id'] = request.session.get('session_id')
-                print("el", request.session.get('session_id', randstr_session))
+                # print("el", request.session.get('session_id', randstr_session))
             return HttpResponseRedirect(reverse('content_viewer:app_available'))
     except Exception as e:
         print("setup error is:---", e)

@@ -33,7 +33,7 @@ class DeskTopData(models.Model):
     end_time = models.CharField(max_length=100, default="")
     duration = models.CharField(max_length=100, default="")
     user = models.CharField(max_length=100, default="")
-    serial_id = models.CharField(max_length=50, default="")
+    serial_id = models.CharField(max_length=50, default="", null=True, blank=True)
 
     @classmethod
     def create(cls, session_id, node_id, start_time, end_time, duration, user, serial_id):
