@@ -8,7 +8,7 @@ import requests
 import time
 from pathlib import Path
 from django.contrib import messages
-from core.models import UsageData
+from core.models import UsageData, DeskTopData
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.conf import settings
@@ -24,15 +24,17 @@ headers = {
     'Accept': 'application/json'
 }
 
+
 def push_data(request):
     return render(request, 'push/data_to_push.html')
+
 
 def create_directory():
     # global homeDir
     if system_os == "Windows":
         homeDir = str(Path.home())
         homeDir = os.path.join(homeDir, r"generate\Backup")
-        if not os.path.exists(homeDir):
+        if not os.path.exists(usageDir):
             os.makedirs(homeDir)
 
         else:
@@ -44,21 +46,23 @@ def create_directory():
             os.makedirs(homeDir)
         else:
             pass
-    
+
     print("homeDir is from create_dir ", homeDir)
     return homeDir
+
 
 def push_usageData(request):
     i = 1
     n = 6
     serial_line = ''
-    randstr = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(n))
-    
+    randstr = ''.join(random.choice(
+        string.ascii_uppercase + string.digits) for _ in range(n))
+
     while True:
         fetch_url = "http://localhost:8000/api/usagedata/?table_name=USAGEDATA&page=%s&page_size=15" % i
         print("url is ", fetch_url)
 
-        #post api
+        # post api
         post_url = "http://rpi.prathamskills.org/api/KolibriSession/Post"
 
         response = requests.get(fetch_url)
@@ -72,7 +76,7 @@ def push_usageData(request):
         for line in serial_file:
             if line.startswith('Serial'):
                 serial_line = line
-        
+
         lstscore['serial_id'] = serial_line
 
         # checks the value of count
@@ -106,7 +110,7 @@ def push_usageData(request):
             except Exception as e1:
                 print("error e1 is ", e1)
                 return False
-        i=i+1
+        i = i+1
     return render(request, 'push/data_to_push.html')
 
 
@@ -114,12 +118,13 @@ def backup(request):
     i = 1
     n = 6
     serial_line = ''
-    randstr = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(n))
+    randstr = ''.join(random.choice(
+        string.ascii_uppercase + string.digits) for _ in range(n))
 
     while True:
-        #get api
+        # get api
         usage_url = "http://localhost:8000/api/usagedata/?table_name=USAGEDATA&page=%s&page_size=15" % i
-        #post api
+        # post api
         # post_url = "http://www.rpi.prathamskills.org/api/pushdata/post/"
 
         response = requests.get(usage_url)
@@ -131,42 +136,48 @@ def backup(request):
             return render(request, 'push/data_to_push.html')
         elif lstscore['count'] != 0 and lstscore['next'] is None:
             try:
+                print("crrr ", create_directory())
                 with open(os.path.join(create_directory(),
-                                                   randstr + str(datetime.datetime.now()) + '.json'),
-                                      "w") as outfile:
-                                json.dump(lstscore, outfile, indent=4, sort_keys=True)
+                                       randstr + str(datetime.datetime.now()) + '.json'),
+                          "w") as outfile:
+                    json.dump(lstscore, outfile, indent=4, sort_keys=True)
             except Exception as bkp_error_next:
-                # print("bkp error is ", bkp_error_next)
-            return render(request, 'push/data_to_push.html')
+                print("bkp error is ", bkp_error_next)
+                return render(request, 'push/data_to_push.html')
         else:
             print("lstscore ", lstscore['next'])
             # import time
             # time.sleep(3)
             try:
+                # usageDir = os.path.join(create_directory(), "usagedata")
+                print("crrr1 ", create_directory())
                 with open(os.path.join(create_directory(),
-                                                   randstr + str(datetime.datetime.now()) + '.json'),
-                                      "w") as outfile:
-                                json.dump(lstscore, outfile, indent=4, sort_keys=True)
+                                       randstr + str(datetime.datetime.now()) + '.json'),
+                          "w") as outfile:
+                    json.dump(lstscore, outfile, indent=4, sort_keys=True)
             except Exception as bkp_error:
                 print("bkp error is ", bkp_error)
             return render(request, 'push/data_to_push.html')
 
-        i=i+1
-
+        i = i+1
 
     return render(request, 'push/data_to_push.html')
 
 
 def clear_data(request):
-    instance = UsageData.objects.all()
-    instance.delete()
+    instance_usage = UsageData.objects.all()
+    instance_usage.delete()
+    instance_desktop = DeskTopData.objects.all()
+    instance_desktop.delete()
     return render(request, 'push/data_to_push.html')
+
 
 def desktop_data_to_server(request):
     i = 1
     n = 6
     serial_line = ''
-    randstr = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(n))
+    randstr = ''.join(random.choice(
+        string.ascii_uppercase + string.digits) for _ in range(n))
 
     if request.session.has_key('session_id'):
         # print("yessss!@#")
@@ -175,25 +186,25 @@ def desktop_data_to_server(request):
     # time.sleep(3)
 
     while True:
-        #get api
+        # get api
         desktop_url = "http://localhost:8000/api/desktopdata/?page=%s&page_size=15" % i
         appList_url = "http://localhost:8000/api/channel/AppList/"
 
         # post api
         post_url = "http://rpi.prathamskills.org/api/KolibriSession/Post"
-        
+
         # desktop data url
         desktop_response = requests.get(desktop_url, headers=headers)
         desktop_result = json.loads(desktop_response.content.decode('utf-8'))
 
         # pi id data to be collected
-        os.system('cat /proc/cpuinfo > serial_data.txt')
-        serial_file = open('serial_data.txt', "r+")
-        for line in serial_file:
-            if line.startswith('Serial'):
-                serial_line = line
-        
-        desktop_result['serial_id'] = serial_line
+        # os.system('cat /proc/cpuinfo > serial_data.txt')
+        # serial_file = open('serial_data.txt', "r+")
+        # for line in serial_file:
+        #     if line.startswith('siblings'):
+        #         serial_line = line
+        # serial_file.close()
+        # print(desktop_result['serial_id'])
 
         # app list url
         appList_response = requests.get(appList_url, headers=headers)
@@ -214,17 +225,15 @@ def desktop_data_to_server(request):
                 desktop_data_to_post = {
                     "desktop_result": desktop_result,
                     "appList_result": appList_result,
-                    "session_id": sessionId,
-                    "serial_id": randstr,
                 }
-                response_post = requests.post(
-                    post_url,
-                    headers=headers,
-                    data=json.dumps(desktop_data_to_post),
-                )
-                print(response_post.status_code, response_post.reason)
-                # from pprint import pprint
-                # pprint(desktop_data_to_post)
+                # response_post = requests.post(
+                #     post_url,
+                #     headers=headers,
+                #     data=json.dumps(desktop_data_to_post),
+                # )
+                # print(response_post.status_code, response_post.reason)
+                from pprint import pprint
+                pprint(desktop_data_to_post)
 
             except Exception as e:
                 return False
@@ -234,24 +243,21 @@ def desktop_data_to_server(request):
                 desktop_data_to_post = {
                     "desktop_result": desktop_result,
                     "appList_result": appList_result,
-                    "session_id": sessionId,
-                    "serial_id": randstr,
                 }
-                response_post = requests.post(
-                    post_url,
-                    headers=headers,
-                    data=json.dumps(desktop_data_to_post),
-                )
-                print(response_post.status_code, response_post.reason)
-                # from pprint import pprint
-                # pprint(desktop_data_to_post)
+                # response_post = requests.post(
+                #     post_url,
+                #     headers=headers,
+                #     data=json.dumps(desktop_data_to_post),
+                # )
+                # print(response_post.status_code, response_post.reason)
+                from pprint import pprint
+                pprint(desktop_data_to_post)
 
             except Exception as e:
                 print("dtp post error ", e)
                 return False
             # return render(request, 'push/data_to_push.html')
 
-        i=i+1
+        i = i+1
 
     return render(request, 'push/data_to_push.html')
-
