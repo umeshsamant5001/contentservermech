@@ -8,7 +8,7 @@ import requests
 import time
 from pathlib import Path
 from django.contrib import messages
-from core.models import UsageData
+from core.models import UsageData, DeskTopData
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.conf import settings
@@ -24,41 +24,68 @@ headers = {
     'Accept': 'application/json'
 }
 
+
 def push_data(request):
     return render(request, 'push/data_to_push.html')
 
-def create_directory():
+
+def create_usage_directory():
     # global homeDir
     if system_os == "Windows":
         homeDir = str(Path.home())
         homeDir = os.path.join(homeDir, r"generate\Backup")
-        if not os.path.exists(homeDir):
-            os.makedirs(homeDir)
-
+        usageDir = os.path.join(homeDir, "usageData")
+        if not os.path.exists(usageDir):
+            os.makedirs(usageDir)
         else:
             pass
     else:
         homeDir = str(Path.home())
         homeDir = os.path.join(homeDir, "generate/Backup")
-        if not os.path.exists(homeDir):
-            os.makedirs(homeDir)
+        usageDir = os.path.join(homeDir, "usageData")
+        if not os.path.exists(usageDir):
+            os.makedirs(usageDir)
         else:
             pass
-    
-    print("homeDir is from create_dir ", homeDir)
-    return homeDir
+
+    # print("homeDir is from create_dir ", homeDir)
+    return usageDir
+
+
+def create_desktop_directory():
+    # global homeDir
+    if system_os == "Windows":
+        homeDir = str(Path.home())
+        homeDir = os.path.join(homeDir, r"generate\Backup")
+        desktopDir = os.path.join(homeDir, "desktopData")
+        if not os.path.exists(desktopDir):
+            os.makedirs(desktopDir)
+        else:
+            pass
+    else:
+        homeDir = str(Path.home())
+        homeDir = os.path.join(homeDir, "generate/Backup")
+        desktopDir = os.path.join(homeDir, "desktopData")
+        if not os.path.exists(desktopDir):
+            os.makedirs(desktopDir)
+        else:
+            pass
+
+    # print("homeDir is from create_dir ", homeDir)
+    return desktopDir
+
 
 def push_usageData(request):
     i = 1
     n = 6
     serial_line = ''
-    randstr = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(n))
-    
+    randstr = ''.join(random.choice(
+        string.ascii_uppercase + string.digits) for _ in range(n))
+
     while True:
         fetch_url = "http://localhost:8000/api/usagedata/?table_name=USAGEDATA&page=%s&page_size=15" % i
-        print("url is ", fetch_url)
 
-        #post api
+        # post api
         post_url = "http://rpi.prathamskills.org/api/KolibriSession/Post"
 
         response = requests.get(fetch_url)
@@ -72,7 +99,7 @@ def push_usageData(request):
         for line in serial_file:
             if line.startswith('Serial'):
                 serial_line = line
-        
+
         lstscore['serial_id'] = serial_line
 
         # checks the value of count
@@ -106,7 +133,7 @@ def push_usageData(request):
             except Exception as e1:
                 print("error e1 is ", e1)
                 return False
-        i=i+1
+        i = i+1
     return render(request, 'push/data_to_push.html')
 
 
@@ -114,77 +141,22 @@ def backup(request):
     i = 1
     n = 6
     serial_line = ''
-    randstr = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(n))
+    randstr = ''.join(random.choice(
+        string.ascii_uppercase + string.digits) for _ in range(n))
 
     while True:
-        #get api
+        # usagedata backup code
+        # get api
         usage_url = "http://localhost:8000/api/usagedata/?table_name=USAGEDATA&page=%s&page_size=15" % i
-        #post api
-        # post_url = "http://www.rpi.prathamskills.org/api/pushdata/post/"
+        print("usage_url ", usage_url)
 
         response = requests.get(usage_url)
 
         lstscore = json.loads(response.content.decode('utf-8'))
 
-        if lstscore['count'] == 0 and lstscore['next'] is None:
-            print("no data")
+        print(response.status_code)
+        if response.status_code == 404:
             return render(request, 'push/data_to_push.html')
-        elif lstscore['count'] != 0 and lstscore['next'] is None:
-            try:
-                with open(os.path.join(create_directory(),
-                                                   randstr + str(datetime.datetime.now()) + '.json'),
-                                      "w") as outfile:
-                                json.dump(lstscore, outfile, indent=4, sort_keys=True)
-            except Exception as bkp_error_next:
-                # print("bkp error is ", bkp_error_next)
-            return render(request, 'push/data_to_push.html')
-        else:
-            print("lstscore ", lstscore['next'])
-            # import time
-            # time.sleep(3)
-            try:
-                with open(os.path.join(create_directory(),
-                                                   randstr + str(datetime.datetime.now()) + '.json'),
-                                      "w") as outfile:
-                                json.dump(lstscore, outfile, indent=4, sort_keys=True)
-            except Exception as bkp_error:
-                print("bkp error is ", bkp_error)
-            return render(request, 'push/data_to_push.html')
-
-        i=i+1
-
-
-    return render(request, 'push/data_to_push.html')
-
-
-def clear_data(request):
-    instance = UsageData.objects.all()
-    instance.delete()
-    return render(request, 'push/data_to_push.html')
-
-def desktop_data_to_server(request):
-    i = 1
-    n = 6
-    serial_line = ''
-    randstr = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(n))
-
-    if request.session.has_key('session_id'):
-        # print("yessss!@#")
-        sessionId = request.session.get('session_id')
-        # print("sessionId is ", sessionId)
-    # time.sleep(3)
-
-    while True:
-        #get api
-        desktop_url = "http://localhost:8000/api/desktopdata/?page=%s&page_size=15" % i
-        appList_url = "http://localhost:8000/api/channel/AppList/"
-
-        # post api
-        post_url = "http://rpi.prathamskills.org/api/KolibriSession/Post"
-        
-        # desktop data url
-        desktop_response = requests.get(desktop_url, headers=headers)
-        desktop_result = json.loads(desktop_response.content.decode('utf-8'))
 
         # pi id data to be collected
         os.system('cat /proc/cpuinfo > serial_data.txt')
@@ -192,8 +164,39 @@ def desktop_data_to_server(request):
         for line in serial_file:
             if line.startswith('Serial'):
                 serial_line = line
-        
-        desktop_result['serial_id'] = serial_line
+
+        lstscore['serial_id'] = serial_line
+
+        if lstscore['count'] == 0 and lstscore['next'] is None:
+            print("no data")
+            return render(request, 'push/data_to_push.html')
+        elif lstscore['count'] != 0 and lstscore['next'] is None:
+            try:
+                with open(os.path.join(create_usage_directory(),
+                                       randstr + str(datetime.datetime.now()) + '.json'),
+                          "w") as outfile:
+                    json.dump(lstscore, outfile, indent=4, sort_keys=True)
+            except Exception as bkp_error_next:
+                print("bkp error is ", bkp_error_next)
+                return render(request, 'push/data_to_push.html')
+        else:
+            print("lstscore ", lstscore['next'])
+            try:
+                with open(os.path.join(create_usage_directory(),
+                                       randstr + str(datetime.datetime.now()) + '.json'),
+                          "w") as outfile:
+                    json.dump(lstscore, outfile, indent=4, sort_keys=True)
+            except Exception as bkp_error:
+                print("bkp error is ", bkp_error)
+                return render(request, 'push/data_to_push.html')
+
+        # desktop data backup
+        desktop_url = "http://localhost:8000/api/desktopdata/?page=%s&page_size=15" % i
+        appList_url = "http://localhost:8000/api/channel/AppList/"
+
+        # desktop data url
+        desktop_response = requests.get(desktop_url, headers=headers)
+        desktop_result = json.loads(desktop_response.content.decode('utf-8'))
 
         # app list url
         appList_response = requests.get(appList_url, headers=headers)
@@ -214,8 +217,94 @@ def desktop_data_to_server(request):
                 desktop_data_to_post = {
                     "desktop_result": desktop_result,
                     "appList_result": appList_result,
-                    "session_id": sessionId,
-                    "serial_id": randstr,
+                }
+                try:
+                    with open(os.path.join(create_desktop_directory(),
+                                        randstr + str(datetime.datetime.now()) + '.json'),
+                            "w") as outfile:
+                        json.dump(desktop_data_to_post, outfile, indent=4, sort_keys=True)
+                except Exception as bkp_error_next:
+                    print("bkp error is ", bkp_error_next)
+                    return render(request, 'push/data_to_push.html')
+
+            except Exception as e:
+                # return False
+                return render(request, 'push/data_to_push.html')
+        else:
+            try:
+                desktop_data_to_post = {
+                    "desktop_result": desktop_result,
+                    "appList_result": appList_result,
+                }
+                try:
+                    with open(os.path.join(create_desktop_directory(),
+                                        randstr + str(datetime.datetime.now()) + '.json'),
+                            "w") as outfile:
+                        json.dump(desktop_data_to_post, outfile, indent=4, sort_keys=True)
+                except Exception as bkp_error_next:
+                    print("bkp error is ", bkp_error_next)
+                    return render(request, 'push/data_to_push.html')
+
+            except Exception as e:
+                print("dtp post error ", e)
+                return False
+            # return render(request, 'push/data_to_push.html')
+
+
+        i = i+1
+
+    return render(request, 'push/data_to_push.html')
+
+
+def clear_data(request):
+    instance_usage = UsageData.objects.all()
+    instance_usage.delete()
+    instance_desktop = DeskTopData.objects.all()
+    instance_desktop.delete()
+    return render(request, 'push/data_to_push.html')
+
+
+def desktop_data_to_server(request):
+    i = 1
+    n = 6
+    serial_line = ''
+    randstr = ''.join(random.choice(
+        string.ascii_uppercase + string.digits) for _ in range(n))
+
+    if request.session.has_key('session_id'):
+        sessionId = request.session.get('session_id')
+
+    while True:
+        # get api
+        desktop_url = "http://localhost:8000/api/desktopdata/?page=%s&page_size=15" % i
+        appList_url = "http://localhost:8000/api/channel/AppList/"
+
+        # post api
+        post_url = "http://rpi.prathamskills.org/api/KolibriSession/Post"
+
+        # desktop data url
+        desktop_response = requests.get(desktop_url, headers=headers)
+        desktop_result = json.loads(desktop_response.content.decode('utf-8'))
+
+        # app list url
+        appList_response = requests.get(appList_url, headers=headers)
+        appList_result = json.loads(appList_response.content.decode('utf-8'))
+
+        if desktop_response.status_code == 404 and appList_response.status_code == 404:
+            return render(request, 'push/data_to_push.html')
+        elif desktop_response.status_code == 404:
+            return render(request, 'push/data_to_push.html')
+        else:
+            pass
+
+        if desktop_result['count'] == 0 and desktop_result['next'] is None:
+            # print("no data")
+            return render(request, 'push/data_to_push.html')
+        elif desktop_result['count'] != 0 and desktop_result['next'] is None:
+            try:
+                desktop_data_to_post = {
+                    "desktop_result": desktop_result,
+                    "appList_result": appList_result,
                 }
                 response_post = requests.post(
                     post_url,
@@ -227,15 +316,13 @@ def desktop_data_to_server(request):
                 # pprint(desktop_data_to_post)
 
             except Exception as e:
-                return False
-            return render(request, 'push/data_to_push.html')
+                # return False
+                return render(request, 'push/data_to_push.html')
         else:
             try:
                 desktop_data_to_post = {
                     "desktop_result": desktop_result,
                     "appList_result": appList_result,
-                    "session_id": sessionId,
-                    "serial_id": randstr,
                 }
                 response_post = requests.post(
                     post_url,
@@ -251,7 +338,6 @@ def desktop_data_to_server(request):
                 return False
             # return render(request, 'push/data_to_push.html')
 
-        i=i+1
+        i = i+1
 
     return render(request, 'push/data_to_push.html')
-

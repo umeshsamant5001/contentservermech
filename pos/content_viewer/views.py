@@ -8,6 +8,7 @@ from content_viewer.converter import m4v_to_mp4, wav_to_mp3
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import TemplateView, ListView, DetailView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.sessions.models import Session
 from core.models import DeskTopData
 from channels.models import AppListFromServerData, AppAvailableInDB, FileDataToBeStored
 
@@ -181,8 +182,21 @@ def desktop_score_data(request):
             else:
                 logged_in_user = "guest"
 
-            desktop_data = DeskTopData.objects.create(node_id=node_id, start_time=startTime, 
-                                                      end_time=endTime, duration=duration, user=user)
+            # pi id data to be collected
+            os.system('cat /proc/cpuinfo > serial_data.txt')
+            serial_file = open('serial_data.txt', "r+")
+            for line in serial_file:
+                if line.startswith('Serial'):
+                    serial_id = line
+                else:
+                    serial_id = ""
+
+            if request.session.has_key('session_id'):
+                session_id = request.session.get('session_id')
+
+            desktop_data = DeskTopData.objects.create(session_id=session_id, node_id=node_id, start_time=startTime, 
+                                                      end_time=endTime, duration=duration, user=user,
+                                                      serial_id=serial_id)
         except Exception as e:
             print("desktop save error is ", e)
             return False

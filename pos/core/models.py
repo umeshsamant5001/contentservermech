@@ -27,14 +27,17 @@ class UsageData(models.Model):
 
 
 class DeskTopData(models.Model):
+    session_id = models.CharField(max_length=30, default="")
     node_id = models.CharField(max_length=100, default="")
     start_time = models.CharField(max_length=100, default="")
     end_time = models.CharField(max_length=100, default="")
     duration = models.CharField(max_length=100, default="")
     user = models.CharField(max_length=100, default="")
+    serial_id = models.CharField(max_length=50, default="", null=True, blank=True)
 
     @classmethod
-    def create(cls, node_id, start_time, end_time):
-        desktop_data = cls(node_id=node_id, start_time=start_time, 
-                            end_time=end_time, duration=duration, user=user)
+    def create(cls, session_id, node_id, start_time, end_time, duration, user, serial_id):
+        desktop_data = cls(session_id=session_id, node_id=node_id, start_time=start_time, 
+                            end_time=end_time, duration=duration, user=user,
+                            serial_id=serial_id)
         return desktop_data

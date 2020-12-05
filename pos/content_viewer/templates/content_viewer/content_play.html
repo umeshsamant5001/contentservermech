@@ -122,7 +122,7 @@
       <script>
           $(document).ready(function () {
             var startTime = new Date();
-            console.log(startTime);
+            console.log(startTime.toLocaleString("en-US"));
             node_id = "{{ node_id }}";
             console.log(node_id);
             requested_url = '/content/resource/'+node_id
@@ -137,8 +137,8 @@
                   type: 'GET',
                   data: {
                     'NodeId': node_id,
-                    'startTime': startTime,
-                    'endTime': endTime,
+                    'startTime': startTime.toLocaleString("en-US"),
+                    'endTime': endTime.toLocaleString("en-US"),
                     'duration': duration
                   },
                   crossDomain: true,
