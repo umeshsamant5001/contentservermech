@@ -25,6 +25,7 @@ class Downloader(object):
     wav_files = None
     pdf_files = None
     wrong_extension = None
+    localUrl = ""
     
 
     current_dir = os.getcwd()
@@ -49,6 +50,13 @@ class Downloader(object):
             os.makedirs(self.store_files)
         else:
             pass
+
+        # self.store_files = os.path.join(self.store_files, AppName)
+        # # print('sf', store_files)
+        # if not os.path.exists(self.store_files):
+        #     os.makedirs(self.store_files)
+        # else:
+        #     pass
 
         # images folder
         self.store_img = os.path.join(self.store_files, 'images')
@@ -135,7 +143,7 @@ class Downloader(object):
     
         self.createdir()
         response = requests.get(download_url, params=querystring, headers=self.headers)
-        print(response)
+        # print(response)
         result = json.loads(response.content.decode('utf-8'))
         # print(result, type(result))
 
@@ -183,6 +191,8 @@ class Downloader(object):
                     if file_url == '':
                         continue
                     else:
+                        self.localUrl = path_to_put
+                        print("local path is ", self.localUrl)
                         file_to_get = requests.get(
                             file_url, stream=True, timeout=10)
                         with open(path_to_put, "wb") as target:
@@ -201,6 +211,9 @@ class Downloader(object):
         except requests.exceptions.ConnectionError as e_error:
             print("e_error ", e_error)
             return False
+
+        print("with qs local ", self.localUrl)
+        # return localUrl
 
 
     # download("http://devposapi.prathamopenschool.org/Api/AppNodeDetailListByNode", {"id": "1"})
@@ -231,9 +244,13 @@ class Downloader(object):
                             if chunk:
                                 target.write(chunk)
                                 target.flush()
-            return True
+                        self.localUrl = path_to_put
+                        print("w/o qs local ", self.localUrl)
+            # return True
         except requests.exceptions.ConnectionError:
             return False
+        
+        # print("this is ", self.localUrl)
 
 # download = Downloader()
 # download.download_files_with_qs("http://devposapi.prathamopenschool.org/Api/AppNodeDetailListByNode",

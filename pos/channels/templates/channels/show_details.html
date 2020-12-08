@@ -33,6 +33,7 @@
     let treeData = '';
     let uniqueArray = [];
     let res = "{{AppId}}";
+    let AppName = "{{ AppName }}"
     $.ajax({
         url: '/channel/return_json_value/'+res+'/',
         type: 'GET',
@@ -306,6 +307,7 @@ function populateTree(parentid)
             data:{
                 'node_values[]':  uniqueArray,
                 'AppId': res,
+                'AppName': AppName,
                 csrfmiddlewaretoken: '{{ csrf_token }}'
             },
             crossDomain: true,

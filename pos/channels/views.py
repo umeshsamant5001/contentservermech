@@ -35,7 +35,7 @@ homeDir = str(Path.home())
 # headers for data fetching
 headers = {
     'cache-control': "no-cache",
-    'content-type': "application/json",
+    'content-type': "application/json; charset=utf-8",
     "Accept": "application/json"
 }
 
@@ -95,6 +95,7 @@ class DownloadAndSaveView(LoginRequiredMixin, View):
         node_values = request.POST.getlist('node_values[]')
         # node_values1 = list(map(str, node_values))
         AppId = request.POST.get('AppId')
+        AppName = request.POST.get('AppName')
 
         """ downloading and saving the content from here
             looping through node_values list"""
@@ -103,7 +104,10 @@ class DownloadAndSaveView(LoginRequiredMixin, View):
             print(AppId, "server data not in db")
             for apps in channels_result:
                 if apps["AppId"] == AppId:
-                    print("aps is : ", apps)
+                    applist_local_url = downloading.localUrl
+                    applist_local_url = applist_local_url.split('static')[1]
+                    # print("local url is ", 'static'+local_url)
+                    applist_local_url = 'static'+applist_local_url
                     AppId = apps["AppId"]
                     AppName = apps['AppName']
                     ThumbUrl = apps['ThumbUrl']
@@ -111,11 +115,13 @@ class DownloadAndSaveView(LoginRequiredMixin, View):
                     AppOrder = apps['AppOrder']
                     DateUpdated = apps['DateUpdated']
                     fileName = os.path.basename(ThumbUrl)
-                    print("filename", fileName)
+                    localUrl = applist_local_url
+                    # print("filename", fileName)
                     applist_server_data = AppListFromServerData.objects.create(AppId=AppId, AppName=AppName,
                                                                                ThumbUrl=ThumbUrl, AppDesc=AppDesc,
                                                                                AppOrder=AppOrder, DateUpdated=DateUpdated,
-                                                                               fileName=fileName)
+                                                                               fileName=fileName,
+                                                                               localUrl=applist_local_url)
                     applist_server_data.save()
         else:
             # just pass the instance of existing app with app id
@@ -125,7 +131,6 @@ class DownloadAndSaveView(LoginRequiredMixin, View):
         for ids in node_values:
             # hit the detail node each time and get the result
             try:
-                # print(ids)
                 detail_node_url = "http://devposapi.prathamopenschool.org/Api/AppNodeDetailListByNode?id={}" .format(
                     ids)
                 detail_node_response = requests.get(
@@ -137,14 +142,15 @@ class DownloadAndSaveView(LoginRequiredMixin, View):
                 response_data = downloading.download_files_with_qs(detail_node_url, {"id": ids})
 
                 if response_data is False:
-                    # print("it is false")
                     return HttpResponseRedirect('/channel/no_internet/')
                 else:
-                    # print("it is true")
+                    # print("localUrl is ", downloading.localUrl)
+                    local_url = downloading.localUrl
+                    local_url = local_url.split('static')[1]
+                    # print("local url is ", 'static'+local_url)
+                    local_url = 'static'+local_url
                     for detail in detail_node_json_val:
                         try:
-                            # print("saving db")
-                            # time.sleep(5)
                             NodeId = detail['NodeId']
                             NodeType = detail['NodeType']
                             NodeTitle = detail['NodeTitle']
@@ -166,13 +172,14 @@ class DownloadAndSaveView(LoginRequiredMixin, View):
                                     FileUrl = file['FileUrl']
                                     DateUpdated = file['DateUpdated']
                                     fileName = os.path.basename(FileUrl)
-                                    # print("filetype is", FileType)
+                                    localUrl = local_url
                                     if not FileDataToBeStored.objects.filter(NodeId=NodeId, FileId=FileId).exists():
                                         file_in_db = FileDataToBeStored.objects.create(appavailableindb=app_in_db,
                                                                                         FileId=FileId, NodeId=NodeId,
                                                                                         FileType=FileType, FileUrl=FileUrl,
                                                                                         DateUpdated=DateUpdated, 
-                                                                                        fileName=fileName)
+                                                                                        fileName=fileName,
+                                                                                        localUrl=local_url)
                                         file_in_db.save()
 
                         except requests.exceptions.ConnectionError:
@@ -191,11 +198,10 @@ class DownloadAndSaveView(LoginRequiredMixin, View):
 
 
 def json_data_storage_view(request, id):
-    json_url = "http://fcapp.openiscool.org/api/AppNodeJsonListByNode?id=%s" % id
+    # json_url = "http://fcapp.openiscool.org/api/AppNodeJsonListByNode?id=%s" % id
+    json_url = "http://devposapi.prathamopenschool.org/api/AppNodeJsonListByNode?id=%s" % id
     json_response = requests.get(json_url, headers=headers)
-    json_result = json.loads(json_response.content.decode('utf-8'))
-
-    # print("inside json ")
+    json_result = json.loads(json_response.content.decode("utf-8"))
 
     try:
         for result in json_result:

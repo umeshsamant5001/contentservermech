@@ -22,7 +22,7 @@ class FileDataSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FileDataToBeStored
-        fields = ['FileId', 'NodeId', 'FileType', 'FileUrl', 'DateUpdated']
+        fields = ['FileId', 'NodeId', 'FileType', 'FileUrl', 'DateUpdated', 'localUrl']
         # depth = 3
 
 
