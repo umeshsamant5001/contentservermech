@@ -93,7 +93,6 @@ class DownloadAndSaveView(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         node_values = request.POST.getlist('node_values[]')
-        # node_values1 = list(map(str, node_values))
         AppId = request.POST.get('AppId')
         AppName = request.POST.get('AppName')
 
