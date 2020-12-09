@@ -17,6 +17,7 @@ from django.contrib.sessions.models import Session
 
 system_os = platform.system()
 print(system_os)
+print(type(system_os))
 
 headers = {
     'cache-control': "no-cache",
@@ -31,15 +32,19 @@ def push_data(request):
 
 def create_usage_directory():
     # global homeDir
-    if system_os == "Windows":
+    print("usgd")
+    if system_os == 'Windows':
+        print("usgdata")
         homeDir = str(Path.home())
         homeDir = os.path.join(homeDir, r"generate\Backup")
-        usageDir = os.path.join(homeDir, "usageData")
+        usageDir = os.path.join(homeDir, r"usageData")
+        print(usageDir)
         if not os.path.exists(usageDir):
             os.makedirs(usageDir)
         else:
             pass
     else:
+        print("linux")
         homeDir = str(Path.home())
         homeDir = os.path.join(homeDir, "generate/Backup")
         usageDir = os.path.join(homeDir, "usageData")
@@ -54,14 +59,19 @@ def create_usage_directory():
 
 def create_desktop_directory():
     # global homeDir
-    if system_os == "Windows":
-        homeDir = str(Path.home())
-        homeDir = os.path.join(homeDir, r"generate\Backup")
-        desktopDir = os.path.join(homeDir, "desktopData")
-        if not os.path.exists(desktopDir):
-            os.makedirs(desktopDir)
-        else:
-            pass
+    if system_os == 'Windows':
+        try:
+            print(system_os, "deskt")
+            homeDir = str(Path.home())
+            homeDir = os.path.join(homeDir, r"generate\Backup")
+            desktopDir = os.path.join(homeDir, r"desktopData")
+            print(desktopDir)
+            if not os.path.exists(desktopDir):
+                os.makedirs(desktopDir)
+            else:
+                pass
+        except Exception as dir_err:
+            print(dir_err)
     else:
         homeDir = str(Path.home())
         homeDir = os.path.join(homeDir, "generate/Backup")

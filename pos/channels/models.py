@@ -13,12 +13,15 @@ class AppListFromServerData(models.Model):
                                    null=True, blank=True)
     fileName = models.CharField(max_length=100, default='', null=True,
                                 blank=True)
+    localUrl = models.CharField(max_length=100, default='', null=True,
+                                blank=True)
 
     @classmethod
     def create(cls, AppId, AppName, ThumbUrl, AppDesc, AppOrder, DateUpdated):
         applist_server_data = cls(AppId=AppId, AppName=AppName, ThumbUrl=ThumbUrl,
                                   AppDesc=AppDesc, AppOrder=AppOrder,
-                                  DateUpdated=DateUpdated, fileName=fileName)
+                                  DateUpdated=DateUpdated, fileName=fileName,
+                                  localUrl=localUrl)
 
         return applist_server_data
 
@@ -60,16 +63,26 @@ class FileDataToBeStored(models.Model):
         max_length=100, null=True, blank=True, default='')
     fileName = models.CharField(max_length=100, default='', null=True,
                                 blank=True)
+    localUrl = models.CharField(max_length=100, default='', null=True,
+                                blank=True)
 
     @classmethod
     def create(cls, FileId, NodeId, FileType, FileUrl, DateUpdated):
         file_data = cls(FileId=FileId, NodeId=NodeId, FileType=FileType, FileUrl=FileUrl,
-                        DateUpdated=DateUpdated, fileName=fileName)
+                        DateUpdated=DateUpdated, fileName=fileName, localUrl=localUrl)
 
         return file_data
 
     def __str__(self):
         return str(self.FileId)
+
+    # @property
+    # def imageURL(self):
+    #     try:
+    #         url = self.localUrl
+    #     except:
+    #         url = ''
+    #     return url
 
 
 class FileUpload(models.Model):

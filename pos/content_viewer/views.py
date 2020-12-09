@@ -56,7 +56,7 @@ class ChildrenAppView(ListView):
     def get_queryset(self, *args, **kwargs):
         global NodeId
         NodeId = self.kwargs['NodeId']
-        print("child NodeId is ", NodeId)
+        # print("child NodeId is ", NodeId)
         queryset = FileDataToBeStored.objects.all().prefetch_related('appavailableindb').filter(appavailableindb__ParentId=NodeId)
         return queryset
 
@@ -66,9 +66,9 @@ class ChildrenAppView(ListView):
         app_name = AppListFromServerData.objects.all()
         parent_db = AppAvailableInDB.objects.filter(NodeId=NodeId)
         parent_db_title = AppAvailableInDB.objects.filter(NodeId=NodeId)
-        print("prdfb is", parent_db_title)
-        for title in parent_db_title:
-            print("parent_db_title", title.NodeTitle)
+        # print("prdfb is", parent_db_title)
+        # for title in parent_db_title:
+        #     print("parent_db_title", title.NodeTitle)
         combined_results = ''
         chaining_queries = []
     

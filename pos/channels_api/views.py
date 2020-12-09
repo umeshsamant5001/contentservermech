@@ -75,7 +75,7 @@ class AppNodeDetailListByNodeView(viewsets.ModelViewSet):
     queryset = AppAvailableInDB.objects.all().order_by('NodeId')
     serializer_class = AppNodeDetailListSerializer
     filter_backends = (DjangoFilterBackend, SearchFilter)
-    filter_fields = ('NodeId',)
+    filter_fields = ('NodeId', 'AppId',)
     pagination_class = PageNumberPagination
 
 
@@ -92,5 +92,5 @@ class JsonDataStorageView(viewsets.ModelViewSet):
     queryset = JsonDataStorage.objects.all()
     serializer_class = JsonDataStorageSerializer
     filter_backends = (DjangoFilterBackend, SearchFilter)
-    filter_fields = ('NodeId', 'JsonId',)
+    filter_fields = ('NodeId', 'JsonType',)
     pagination_class = PageNumberPagination
