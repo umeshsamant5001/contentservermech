@@ -93,7 +93,7 @@ def push_usageData(request):
         string.ascii_uppercase + string.digits) for _ in range(n))
 
     while True:
-        fetch_url = "http://localhost:8000/api/usagedata/?table_name=USAGEDATA&page=%s&page_size=15" % i
+        fetch_url = "http://192.168.4.1:8000/api/usagedata/?table_name=USAGEDATA&page=%s&page_size=15" % i
 
         # post api
         post_url = "http://rpi.prathamskills.org/api/KolibriSession/Post"
@@ -157,7 +157,7 @@ def backup(request):
     while True:
         # usagedata backup code
         # get api
-        usage_url = "http://localhost:8000/api/usagedata/?table_name=USAGEDATA&page=%s&page_size=15" % i
+        usage_url = "http://192.168.4.1:8000/api/usagedata/?table_name=USAGEDATA&page=%s&page_size=15" % i
         print("usage_url ", usage_url)
 
         response = requests.get(usage_url)
@@ -201,8 +201,8 @@ def backup(request):
                 return render(request, 'push/data_to_push.html')
 
         # desktop data backup
-        desktop_url = "http://localhost:8000/api/desktopdata/?page=%s&page_size=15" % i
-        appList_url = "http://localhost:8000/api/channel/AppList/"
+        desktop_url = "http://192.168.4.1:8000/api/desktopdata/?page=%s&page_size=15" % i
+        appList_url = "http://192.168.4.1:8000/api/channel/AppList/"
 
         # desktop data url
         desktop_response = requests.get(desktop_url, headers=headers)
@@ -286,8 +286,8 @@ def desktop_data_to_server(request):
 
     while True:
         # get api
-        desktop_url = "http://localhost:8000/api/desktopdata/?page=%s&page_size=15" % i
-        appList_url = "http://localhost:8000/api/channel/AppList/"
+        desktop_url = "http://192.168.4.1:8000/api/desktopdata/?page=%s&page_size=15" % i
+        appList_url = "http://192.168.4.1:8000/api/channel/AppList/"
 
         # post api
         post_url = "http://rpi.prathamskills.org/api/KolibriSession/Post"
