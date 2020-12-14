@@ -8,7 +8,8 @@
     <li>
       {% for qs in parent_details %}
         {% if qs.appavailableindb.NodeType == "App"%}
-          <a href="{% url 'content_viewer:parent_details' AppId=qs.appavailableindb.AppId %}">{{ qs.appavailableindb.applistfromserverdata.AppName }}</a>
+          <a href="{% url 'content_viewer:parent_details' AppId=qs.appavailableindb.AppId %}">
+          {{ qs.appavailableindb.applistfromserverdata.AppName }}</a>
         {% endif %}
       {% endfor %}
     </li>

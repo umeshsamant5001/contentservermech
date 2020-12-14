@@ -13,7 +13,9 @@
               <li>
                   {% for qs in app_name %}
                       <a href="{% url 'content_viewer:parent_details' AppId=qs.AppId %}">
-                          {{ qs.AppName }}
+                          {% if qs.AppId == appid %}
+                            {{ qs.AppName }}
+                          {% endif %}
                       </a>
                   {% endfor %}
               </li>

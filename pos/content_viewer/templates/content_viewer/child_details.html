@@ -13,17 +13,22 @@
             <li>
                 {% for qs in app_name %}
                     <a href="{% url 'content_viewer:parent_details' AppId=qs.AppId %}">
-                        {{ qs.AppName }}
+                        {% if qs.AppId == appid %}
+                            {{ qs.AppName }}
+                        {% endif %}
                     </a>
                 {% endfor %}
             </li>
             {% for qs in chaining_queries %}
                 {% for ids in qs %}
-                    <li><a href="{% url 'content_viewer:child_details' NodeId=ids.NodeId %}">{{ ids.NodeTitle }}</a></li>
+                    <li><a href="{% url 'content_viewer:child_details' NodeId=ids.NodeId %}">
+                    {{ ids.NodeTitle }}
+                    </a></li>
                 {% endfor %}
             {% endfor %}
             {% for qs in parent_db_title %}
-                <li>{{ qs.NodeTitle }}</li>
+                <li>{{ qs.NodeTitle }}
+                </li>
             {% endfor %}
           </ul>
       </nav>

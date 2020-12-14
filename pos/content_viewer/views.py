@@ -37,15 +37,16 @@ class ParentAppView(ListView):
     template_name = "content_viewer/app_details.html"
 
     def get_queryset(self, *args, **kwargs):
+        global AppId
         AppId = self.kwargs['AppId']
         queryset = FileDataToBeStored.objects.all().select_related('appavailableindb').filter(appavailableindb__AppId=AppId)
         return queryset
 
     def get_context_data(self, *args, **kwargs):
-        # print("AppId is ", AppId)
+        print("AppId is ", AppId)
         context = super(ParentAppView, self).get_context_data(*args, **kwargs)
         queryset = self.get_queryset()
-        app_name = ''
+        # context['appid'] = AppId
         context["parent_details"] = queryset
         return context
 
@@ -64,6 +65,11 @@ class ChildrenAppView(ListView):
         context = super(ChildrenAppView, self).get_context_data(*args, **kwargs)
         queryset = self.get_queryset()
         app_name = AppListFromServerData.objects.all()
+        for qs in app_name:
+            if AppId == qs.AppId:
+                print(qs.AppName)
+            else:
+                pass
         parent_db = AppAvailableInDB.objects.filter(NodeId=NodeId)
         parent_db_title = AppAvailableInDB.objects.filter(NodeId=NodeId)
         # print("prdfb is", parent_db_title)
@@ -85,6 +91,7 @@ class ChildrenAppView(ListView):
         context['chaining_queries'] = combined_results
         context['app_name'] = app_name
         context['child_details'] = queryset
+        context['appid'] = AppId
         # print(context)
         context['parent_db_title'] = parent_db_title
         return context
@@ -114,6 +121,7 @@ def resource_view(request, NodeId):
     context['chaining_queries'] = combined_results
     context['app_name'] = app_name
     context['node_id'] = NodeId
+    context['appid'] = AppId
     context['parent_db_title'] = parent_db_title
     # print("genral path is ", general_path, zip_path)
     if system_os == "Windows":
