@@ -44,13 +44,16 @@ channels_result = None
 # getting list of channels using API
 @login_required
 def channel_list_on_server(request):
-    global channels_result
+    # global channels_result
     try:
         context = {}
         channels_url = "http://devposapi.prathamopenschool.org/api/AppList"
         channels_response = requests.get(channels_url, headers=headers)
         channels_result = json.loads(channels_response.content.decode("utf-8"))
-        downloading.download_files_without_qs(channels_url)
+        for app in  channels_result:
+            for k,v in app.items():
+                if k == 'AppName':
+                    downloading.download_files_without_qs(channels_url, v)
         context['channels_from_server'] = channels_result
         return render(request, 'channels/channels_list_from_server.html', context=context)
     except requests.exceptions.ConnectionError:
@@ -96,6 +99,10 @@ class DownloadAndSaveView(LoginRequiredMixin, View):
         AppId = request.POST.get('AppId')
         AppName = request.POST.get('AppName')
 
+        channels_url = "http://devposapi.prathamopenschool.org/api/AppList"
+        channels_response = requests.get(channels_url, headers=headers)
+        channels_result = json.loads(channels_response.content.decode("utf-8"))
+
         """ downloading and saving the content from here
             looping through node_values list"""
         # applist_server_data = None
@@ -138,7 +145,7 @@ class DownloadAndSaveView(LoginRequiredMixin, View):
                     detail_node_response.content.decode('utf-8'))
 
                 # downloading the files
-                response_data = downloading.download_files_with_qs(detail_node_url, {"id": ids})
+                response_data = downloading.download_files_with_qs(detail_node_url, {"id": ids}, AppName)
 
                 if response_data is False:
                     return HttpResponseRedirect('/channel/no_internet/')

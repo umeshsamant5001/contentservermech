@@ -42,7 +42,7 @@ class Downloader(object):
         "Accept": "application/json"
     }
 
-    def createdir(self):
+    def createdir(self, AppName):
         # time.sleep(15)
         self.store_files = os.path.join(self.new_current_dir, 'storage')
         # print('sf', store_files)
@@ -51,12 +51,12 @@ class Downloader(object):
         else:
             pass
 
-        # self.store_files = os.path.join(self.store_files, AppName)
-        # # print('sf', store_files)
-        # if not os.path.exists(self.store_files):
-        #     os.makedirs(self.store_files)
-        # else:
-        #     pass
+        self.store_files = os.path.join(self.store_files, AppName)
+        # print('sf', store_files)
+        if not os.path.exists(self.store_files):
+            os.makedirs(self.store_files)
+        else:
+            pass
 
         # images folder
         self.store_img = os.path.join(self.store_files, 'images')
@@ -138,10 +138,10 @@ class Downloader(object):
             pass
 
 
-    def download_files_with_qs(self, download_url, querystring):
+    def download_files_with_qs(self, download_url, querystring, AppName):
         print("url is ", download_url)
     
-        self.createdir()
+        self.createdir(AppName)
         response = requests.get(download_url, params=querystring, headers=self.headers)
         # print(response)
         result = json.loads(response.content.decode('utf-8'))
@@ -219,8 +219,8 @@ class Downloader(object):
     # download("http://devposapi.prathamopenschool.org/Api/AppNodeDetailListByNode", {"id": "1"})
 
 
-    def download_files_without_qs(self, download_url):
-        self.createdir()
+    def download_files_without_qs(self, download_url, AppName):
+        self.createdir(AppName)
         response = requests.get(download_url, headers=self.headers)
         print(response)
         result = json.loads(response.content.decode('utf-8'))
