@@ -16,38 +16,38 @@
             <div class="row">
                 <!-- Iterate over object_list -->
                 {% for object in apps_list %}
-              <div class="col-md-4 col-4">
-                <div class="card mb-4 box-shadow" >
-                  <a href="{% url 'content_viewer:parent_details' AppId=object.AppId %}">
-                      <img class="card-img-top" src="{% static '/storage/images/'|add:object.fileName %}"
-                        width="50%" height="120" alt="Pratham Open School">
-                  </a>
-                  <div class="card-body">
-                    <p class="card-text"><strong>{{ object.AppName }}</strong></p>
-                    {% comment %} <p class="card-text">{{ object.AppDesc }}</p> {% endcomment %}
-                    <hr>
-                    <div class="d-flex justify-content-between align-items-center">
-                      {% if request.user.is_authenticated %}
-                      &nbsp;&nbsp;
-                      <div class="btn-group">
-                        <a href="{% url 'content_viewer:parent_details' AppId=object.AppId %}">
-                            <button class="btn btn-outline-primary my-2 my-sm-0" type="button">View</button>
-                        </a>
-                        &nbsp;&nbsp;&nbsp;
-                        <a href="{% url 'channels:channel_list' %}">
-                            <button class="btn btn-outline-primary my-2 my-sm-0" type="button">Update</button>
-                        </a>
-                        {% else %}
+                <div class="col-md-4 col-4">
+                  <div class="card mb-4 box-shadow" >
+                    <a href="{% url 'content_viewer:parent_details' AppId=object.AppId %}">
+                        <img class="card-img-top" src="{% get_static_prefix %}storage/{{object.AppName}}/images/{{object.fileName}}"
+                          width="50%" height="120" alt="Pratham Open School">
+                    </a>
+                    <div class="card-body">
+                      <p class="card-text"><strong>{{ object.AppName }}</strong></p>
+                      {% comment %} <p class="card-text">{{ object.AppDesc }}</p> {% endcomment %}
+                      <hr>
+                      <div class="d-flex justify-content-between align-items-center">
+                        {% if request.user.is_authenticated %}
+                        &nbsp;&nbsp;
+                        <div class="btn-group">
                           <a href="{% url 'content_viewer:parent_details' AppId=object.AppId %}">
-                            <button class="btn btn-outline-primary my-2 my-sm-0" type="button">View</button>
-                        </a>
-                          </p>
-                        {% endif %}
+                              <button class="btn btn-outline-primary my-2 my-sm-0" type="button">View</button>
+                          </a>
+                          &nbsp;&nbsp;&nbsp;
+                          <a href="{% url 'channels:channel_list' %}">
+                              <button class="btn btn-outline-primary my-2 my-sm-0" type="button">Update</button>
+                          </a>
+                          {% else %}
+                            <a href="{% url 'content_viewer:parent_details' AppId=object.AppId %}">
+                              <button class="btn btn-outline-primary my-2 my-sm-0" type="button">View</button>
+                          </a>
+                            </p>
+                          {% endif %}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
               <!-- check if empty -->
                 {% empty %}

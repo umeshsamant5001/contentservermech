@@ -37,16 +37,20 @@ class ParentAppView(ListView):
     template_name = "content_viewer/app_details.html"
 
     def get_queryset(self, *args, **kwargs):
-        global AppId
         AppId = self.kwargs['AppId']
+        self.request.session['AppId'] = AppId
         queryset = FileDataToBeStored.objects.all().select_related('appavailableindb').filter(appavailableindb__AppId=AppId)
         return queryset
 
     def get_context_data(self, *args, **kwargs):
-        print("AppId is ", AppId)
+        print("AppId is ", self.request.session.get('AppId'))
         context = super(ParentAppView, self).get_context_data(*args, **kwargs)
         queryset = self.get_queryset()
-        # context['appid'] = AppId
+        folder_app_name = AppListFromServerData.objects.filter(AppId=self.request.session.get('AppId'))
+        for app in folder_app_name:
+            print(app.AppName)
+            self.request.session['folder_app_name'] = app.AppName
+        context['folder_app_name'] = self.request.session.get('folder_app_name')
         context["parent_details"] = queryset
         return context
 
@@ -55,9 +59,10 @@ class ChildrenAppView(ListView):
     template_name = "content_viewer/child_details.html"
 
     def get_queryset(self, *args, **kwargs):
-        global NodeId
+        # global NodeId
         NodeId = self.kwargs['NodeId']
-        # print("child NodeId is ", NodeId)
+        self.request.session['NodeId'] = NodeId
+        # print("child NodeId is ", self.request.session.get('NodeId'))
         queryset = FileDataToBeStored.objects.all().prefetch_related('appavailableindb').filter(appavailableindb__ParentId=NodeId)
         return queryset
 
@@ -65,16 +70,8 @@ class ChildrenAppView(ListView):
         context = super(ChildrenAppView, self).get_context_data(*args, **kwargs)
         queryset = self.get_queryset()
         app_name = AppListFromServerData.objects.all()
-        for qs in app_name:
-            if AppId == qs.AppId:
-                print(qs.AppName)
-            else:
-                pass
-        parent_db = AppAvailableInDB.objects.filter(NodeId=NodeId)
-        parent_db_title = AppAvailableInDB.objects.filter(NodeId=NodeId)
-        # print("prdfb is", parent_db_title)
-        # for title in parent_db_title:
-        #     print("parent_db_title", title.NodeTitle)
+        parent_db = AppAvailableInDB.objects.filter(NodeId=self.request.session.get('NodeId'))
+        parent_db_title = AppAvailableInDB.objects.filter(NodeId=self.request.session.get('NodeId'))
         combined_results = ''
         chaining_queries = []
     
@@ -82,7 +79,6 @@ class ChildrenAppView(ListView):
             parent_id = parent_db.first().ParentId
             parent_db = AppAvailableInDB.objects.filter(NodeId=parent_id)
             if not parent_db:
-                # print("prdb is ", parent_db)
                 pass
             else:
                 parent_db = AppAvailableInDB.objects.filter(NodeId=parent_id)
@@ -91,7 +87,7 @@ class ChildrenAppView(ListView):
         context['chaining_queries'] = combined_results
         context['app_name'] = app_name
         context['child_details'] = queryset
-        context['appid'] = AppId
+        context['appid'] = self.request.session.get('AppId')
         # print(context)
         context['parent_db_title'] = parent_db_title
         return context
@@ -121,23 +117,23 @@ def resource_view(request, NodeId):
     context['chaining_queries'] = combined_results
     context['app_name'] = app_name
     context['node_id'] = NodeId
-    context['appid'] = AppId
+    context['appid'] = request.session.get('AppId')
     context['parent_db_title'] = parent_db_title
     # print("genral path is ", general_path, zip_path)
     if system_os == "Windows":
-        zip_path = os.path.join(zip_path, r'storage\content\zips')
-        vid_m4v_path = os.path.join(general_path, r'storage\content\videos\m4v')
-        audio_wav_path = os.path.join(general_path, r'storage\content\videos\wav')
+        zip_path = os.path.join(zip_path, r'storage'+'\\'+request.session.get('folder_app_name')+'\\'+r'content\zips')
+        vid_m4v_path = os.path.join(general_path, r'storage'+'\\'+request.session.get('folder_app_name')+'\\'+r'content\videos\m4v')
+        audio_wav_path = os.path.join(general_path, r'storage'+'\\'+request.session.get('folder_app_name')+'\\'+r'content\audios\wav')
     else:
-        zip_path = os.path.join(zip_path, 'storage/content/zips')
-        vid_m4v_path = os.path.join(general_path, 'storage/content/videos/m4v')
+        zip_path = os.path.join(zip_path, 'storage'+'/'+request.session.get('folder_app_name')+'/'+'content/zips')
+        vid_m4v_path = os.path.join(general_path, 'storage/'+request.session.get('folder_app_name')+'/content/videos/m4v')
         # print("vid_m4v_path path is ", vid_m4v_path, zip_path)
-        audio_wav_path = os.path.join(general_path, 'storage/content/audios/wav')
-        # print("audio_wav_path path is ", audio_wav_path, zip_path)
+        audio_wav_path = os.path.join(general_path, 'storage'+'/'+request.session.get('folder_app_name')+'/'+'content/audios/wav')
+        print("audio_wav_path path is ", audio_wav_path, zip_path)
     for qs in queryset:
         if qs.FileType == "Content" and qs.fileName.endswith('.zip'):
             zip_path1 = os.path.join(zip_path, qs.fileName)
-            qs.fileName = extraction(zip_path1)
+            qs.fileName = extraction(zip_path1, request.session.get('folder_app_name'))
             zip_path = os.path.join(zip_path, qs.fileName)
             context['file'] = qs.fileName
             context['game_play'] = queryset
@@ -153,9 +149,7 @@ def resource_view(request, NodeId):
         elif qs.FileType == "Content" and qs.fileName.endswith('.m4v'):
             vid_m4v_path1 = os.path.join(vid_m4v_path, qs.fileName)
             # print("vid_m4v_path1!!!", vid_m4v_path1, vid_m4v_path, qs.fileName)
-            qs.fileName = m4v_to_mp4(vid_m4v_path1)
-            # print("qs.fileName!!!", qs.fileName)
-            print("converted!!!")
+            qs.fileName = m4v_to_mp4(vid_m4v_path1, request.session.get('folder_app_name'))
             # time.sleep(50)
             context['video_play'] = queryset
             print(context)
@@ -165,8 +159,8 @@ def resource_view(request, NodeId):
             return render(request, "content_viewer/content_play.html", context=context)
         elif qs.FileType == "Content" and qs.fileName.endswith('.wav'):
             audio_wav_path1 = os.path.join(audio_wav_path, qs.fileName)
-            qs.fileName = wav_to_mp3(audio_wav_path1)
-            print("audio converted!!!")
+            qs.fileName = wav_to_mp3(audio_wav_path1, request.session.get('folder_app_name'))
+            # print(qs.fileName, " and ", awp1)
             context['audio_play'] = queryset
             return render(request, "content_viewer/content_play.html", context=context)
         elif qs.FileType == "Content" and qs.fileName.endswith('.png' or '.jpg' or '.jpeg' or '.mpeg'):

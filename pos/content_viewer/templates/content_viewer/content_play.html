@@ -42,7 +42,7 @@
                         <div class="title">
                           <p style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 2em;">{{object.appavailableindb.NodeTitle}}</p>
                           <!-- <br/><br/> -->                          
-                            <embed type="text/html" src="{% static '/storage/content/zips/'|add:object.fileName %}" 
+                            <embed type="text/html" src="{% get_static_prefix %}storage/{{object.appavailableindb.applistfromserverdata.AppName}}/content/zips/{{object.fileName}}" 
                             width="900" height="500">
                         </div><br>
                       {% endif %}
@@ -55,8 +55,7 @@
                         <div class="title">
                           <p style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 2em;">{{object.appavailableindb.NodeTitle}}</p>
                           <!-- <br/><br/> -->
-                          
-                            <embed type="application/pdf" src="{% static '/storage/content/docs/'|add:object.fileName %}" 
+                            <embed type="application/pdf" src="{% get_static_prefix %}storage/{{object.appavailableindb.applistfromserverdata.AppName}}/content/docs/{{object.fileName}}" 
                             width="800" height="900">
                           </div><br>
                       {% endif %}
@@ -69,9 +68,8 @@
                       <div class="title">
                         <p style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 2em;">{{object.appavailableindb.NodeTitle}}</p>
                         <!-- <br/><br/> -->
-                        
                           <video style="width:100%;" controls>
-                            <source src="{% static '/storage/content/videos/mp4/'|add:object.fileName %}" type="video/mp4" controls>
+                            <source src="{% get_static_prefix %}storage/{{object.appavailableindb.applistfromserverdata.AppName}}/content/videos/mp4/{{object.fileName}}" type="video/mp4" controls>
                             Your browser does not support the video tag
                           </video>
                         </div><br>
@@ -88,7 +86,7 @@
                         
                             <div class="jumbotron">
                               <audio style="width:100%;" controls>
-                                <source src="{% static '/storage/content/audios/mp3/'|add:object.fileName %}" type="audio/mp3" controls>
+                                <source src="{% get_static_prefix %}storage/{{object.appavailableindb.applistfromserverdata.AppName}}/content/audios/mp3/{{object.fileName}}" type="audio/mp3" controls>
                                 Your browser does not support the audio tag
                             </audio>
                             </div>
@@ -118,6 +116,8 @@
               </div>
             </div>
           </div>
+          <br><br/>
+          <br><br/>
   
       </main>
 

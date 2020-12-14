@@ -26,7 +26,7 @@
           <div class="col-md-4 col-4">
             <div class="card mb-4 box-shadow" >
               <a href="{% url 'content_viewer:child_details' NodeId=object.NodeId %}">
-                <img class="card-img-top" src="{% static '/storage/images/'|add:object.fileName %}"
+                <img class="card-img-top" src="{% get_static_prefix %}storage/{{object.appavailableindb.applistfromserverdata.AppName}}/images/{{object.fileName}}"
                   width="50%" height="120" alt="Pratham Open School">
               </a>
               <div class="card-body">
