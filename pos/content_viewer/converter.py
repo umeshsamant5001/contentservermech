@@ -36,7 +36,7 @@ def m4v_to_mp4(m4v_url, AppName):
             return None
 
     # print("final path is ", mp4_path.split('/')[-1])
-    return mp4_path.split('/')[-1]
+    return mp4_path
 
 # m4v_to_mp4(r"C:\contentservermech\contentserver\pos\static\storage\content\videos\m4v\07_RANI_MACCHHLEE_HB_202005261804388793.m4v")
 
@@ -71,7 +71,6 @@ def wav_to_mp3(wav_url, AppName):
             print("Problem converting " + wav_url)
             return None
 
-    print("final path is ", mp3_path.split('\\')[-1])
     return mp3_path
 
 

@@ -139,7 +139,7 @@ class Downloader(object):
 
 
     def download_files_with_qs(self, download_url, querystring, AppName):
-        print("url is ", download_url)
+        # print("url is ", download_url)
     
         self.createdir(AppName)
         response = requests.get(download_url, params=querystring, headers=self.headers)
@@ -192,7 +192,7 @@ class Downloader(object):
                         continue
                     else:
                         self.localUrl = path_to_put
-                        print("local path is ", self.localUrl)
+                        # print("local path is ", self.localUrl)
                         file_to_get = requests.get(
                             file_url, stream=True, timeout=10)
                         with open(path_to_put, "wb") as target:
@@ -212,7 +212,7 @@ class Downloader(object):
             print("e_error ", e_error)
             return False
 
-        print("with qs local ", self.localUrl)
+        # print("with qs local ", self.localUrl)
         # return localUrl
 
 
@@ -245,7 +245,6 @@ class Downloader(object):
                                 target.write(chunk)
                                 target.flush()
                         self.localUrl = path_to_put
-                        print("w/o qs local ", self.localUrl)
             # return True
         except requests.exceptions.ConnectionError:
             return False

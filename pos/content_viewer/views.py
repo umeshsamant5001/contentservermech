@@ -129,7 +129,7 @@ def resource_view(request, NodeId):
         vid_m4v_path = os.path.join(general_path, 'storage/'+request.session.get('folder_app_name')+'/content/videos/m4v')
         # print("vid_m4v_path path is ", vid_m4v_path, zip_path)
         audio_wav_path = os.path.join(general_path, 'storage'+'/'+request.session.get('folder_app_name')+'/'+'content/audios/wav')
-        print("audio_wav_path path is ", audio_wav_path, zip_path)
+        # print("audio_wav_path path is ", audio_wav_path, zip_path)
     for qs in queryset:
         if qs.FileType == "Content" and qs.fileName.endswith('.zip'):
             zip_path1 = os.path.join(zip_path, qs.fileName)
@@ -148,11 +148,13 @@ def resource_view(request, NodeId):
             return render(request, "content_viewer/content_play.html", context=context)
         elif qs.FileType == "Content" and qs.fileName.endswith('.m4v'):
             vid_m4v_path1 = os.path.join(vid_m4v_path, qs.fileName)
-            # print("vid_m4v_path1!!!", vid_m4v_path1, vid_m4v_path, qs.fileName)
             qs.fileName = m4v_to_mp4(vid_m4v_path1, request.session.get('folder_app_name'))
-            # time.sleep(50)
-            context['video_play'] = queryset
-            print(context)
+            if system_os == "Windows":
+                converted_video = qs.fileName.split('\\')[-1]
+            else:
+                converted_video = qs.fileName.split('/')[-1]
+            context['m4v_video_play'] = queryset
+            context['converted_video'] = converted_video
             return render(request, "content_viewer/content_play.html", context=context)
         elif qs.FileType == "Content" and qs.fileName.endswith('.mp3'):
             context['audio_play'] = queryset
@@ -160,8 +162,12 @@ def resource_view(request, NodeId):
         elif qs.FileType == "Content" and qs.fileName.endswith('.wav'):
             audio_wav_path1 = os.path.join(audio_wav_path, qs.fileName)
             qs.fileName = wav_to_mp3(audio_wav_path1, request.session.get('folder_app_name'))
-            # print(qs.fileName, " and ", awp1)
-            context['audio_play'] = queryset
+            if system_os == "Windows":
+                converted_audio = qs.fileName.split('\\')[-1]
+            else:
+                converted_audio = qs.fileName.split('/')[-1]
+            context['wav_audio_play'] = queryset
+            context['converted_audio'] = converted_audio
             return render(request, "content_viewer/content_play.html", context=context)
         elif qs.FileType == "Content" and qs.fileName.endswith('.png' or '.jpg' or '.jpeg' or '.mpeg'):
             context['wrong_format'] = queryset

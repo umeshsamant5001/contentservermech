@@ -35,7 +35,6 @@
           <div class="container ">
   
             <div class="row ">
-                <!-- games  -->
                 {% if game_play %}
                   {% for object in game_play %}
                       {% if object.FileType == "Content" and object.appavailableindb.NodeType == "Resource" %}
@@ -76,6 +75,20 @@
                     {% endif %}
                   {% endfor %}
                 
+                {% elif m4v_video_play %}
+                  {% for object in m4v_video_play %}
+                    {% if object.FileType == "Content" and object.appavailableindb.NodeType == "Resource" %}
+                      <div class="title">
+                        <p style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 2em;">{{object.appavailableindb.NodeTitle}}</p>
+                        <!-- <br/><br/> -->
+                          <video style="width:100%;" controls>
+                            <source src="{% get_static_prefix %}storage/{{object.appavailableindb.applistfromserverdata.AppName}}/content/videos/mp4/{{converted_video}}" type="video/mp4" controls>
+                            Your browser does not support the video tag
+                          </video>
+                        </div><br>
+                    {% endif %}
+                  {% endfor %}
+                
                 <!-- audio -->
                 {% elif audio_play %}
                   {% for object in audio_play %}
@@ -87,6 +100,21 @@
                             <div class="jumbotron">
                               <audio style="width:100%;" controls>
                                 <source src="{% get_static_prefix %}storage/{{object.appavailableindb.applistfromserverdata.AppName}}/content/audios/mp3/{{object.fileName}}" type="audio/mp3" controls>
+                                Your browser does not support the audio tag
+                            </audio>
+                            </div>
+                      </div><br>
+                    {% endif %}
+                  {% endfor %}
+                
+                {% elif wav_audio_play %}
+                  {% for object in wav_audio_play %}
+                    {% if object.FileType == "Content" and object.appavailableindb.NodeType == "Resource" %}
+                      <div class="title">
+                        <p style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 2em;">{{object.appavailableindb.NodeTitle}}</p>
+                            <div class="jumbotron">
+                              <audio style="width:100%;" controls>
+                                <source src="{% get_static_prefix %}storage/{{object.appavailableindb.applistfromserverdata.AppName}}/content/audios/mp3/{{converted_audio}}" type="audio/mp3" controls>
                                 Your browser does not support the audio tag
                             </audio>
                             </div>
