@@ -191,6 +191,7 @@ def desktop_score_data(request):
                 logged_in_user = "guest"
 
             # pi id data to be collected
+            # passing serial_id for API 
             os.system('cat /proc/cpuinfo > serial_data.txt')
             serial_file = open('serial_data.txt', "r+")
             for line in serial_file:
