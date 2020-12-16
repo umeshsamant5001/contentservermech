@@ -195,7 +195,8 @@ def desktop_score_data(request):
             serial_file = open('serial_data.txt', "r+")
             for line in serial_file:
                 if line.startswith('Serial'):
-                    serial_id = line
+                    serial_id = line.split(':')[1]
+                    break
                 else:
                     serial_id = ""
 
